@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BEKNAZAURUS — авторское документальное медиа о Кыргызстане</title>
+<meta name="description" content="Исследую Кыргызстан через людей, которые его создают. Истории, фильмы, фотографии и путешествия Бекназара Сейита.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header id="hdr">
+  <a class="logo" href="#/">BEKNAZAURUS</a>
+  <nav id="mainnav" aria-label="Главное меню">
+    <a href="#/stories" data-nav="stories" data-t="nav.stories">Истории</a>
+    <a href="#/travel" data-nav="travel" data-t="nav.travel">Путешествия</a>
+    <a href="#/about" data-nav="about" data-t="nav.about">О нас</a>
+  </nav>
+  <div class="hdr-right">
+    <button type="button" id="searchBtn" aria-label="Поиск"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg><span data-t="ui.search">Поиск</span></button>
+    <div class="langsw" role="group" aria-label="Язык"><button data-lang="ru">RU</button><button data-lang="en">ENG</button><button data-lang="ky">KG</button></div>
+  </div>
+</header>
+
+<div id="search" role="dialog" aria-modal="true" aria-label="Поиск" hidden>
+  <div class="search-in">
+    <input id="q" type="search" autocomplete="off" placeholder="Поиск по историям, путешествиям и работам">
+    <button type="button" id="searchClose" aria-label="Закрыть">×</button>
+  </div>
+  <div id="results"></div>
+</div>
+
+<button id="sound" type="button" aria-pressed="false" aria-label="Музыка">
+  <span class="eq"><i></i><i></i><i></i><i></i></span>
+  <span class="lbl" data-t="snd.lbl">Музыка</span><span class="hint" data-t="snd.hint">Нажмите — включится музыка</span>
+</button>
+
+<div id="lb" role="dialog" aria-label="Фото"><img alt=""><button type="button" aria-label="Закрыть">×</button></div>
+
+<main id="app"></main>
+
+<footer id="foot"></footer>
+
+<script src="content.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
