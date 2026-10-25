@@ -631,3 +631,16 @@ body.home-light .foot-cols a:hover{color:#000;text-decoration:underline;}
 
 #hdr{transition:background .3s,padding .3s,box-shadow .3s,transform .35s ease;}
 #hdr.hide{transform:translateY(-110%);}
+
+/* 10-й фрейм: три крупные карточки (по макету 324×508, отступы 83/52 → ровные 68) */
+.pg-home .fh-three{grid-template-columns:repeat(3,calc(324*var(--k)));justify-content:center;column-gap:calc(68*var(--k));row-gap:24px;}
+.pg-home .fh-three .card .poster{aspect-ratio:324/508;border-radius:calc(22*var(--k));}
+.pg-home .fh-three .card h3{font-size:calc(22*var(--k));}
+.pg-home .fh-three .card .cap p{font-size:calc(15*var(--k));}
+.pg-home .fh-three .card .cap .meta{font-size:calc(13*var(--k));}
+.pg-home .fh-three .card .fmt{font-size:calc(11*var(--k));top:calc(14*var(--k));left:calc(14*var(--k));}
+@media(max-width:900px){
+  .pg-home .fh-three{grid-template-columns:1fr;max-width:340px;margin:0 auto;}
+  .pg-home .fh-three .card .poster{border-radius:18px;}
+  .pg-home .fh-three .card h3{font-size:18px;} .pg-home .fh-three .card .cap p{font-size:14px;} .pg-home .fh-three .card .cap .meta{font-size:12px;} .pg-home .fh-three .card .fmt{font-size:10px;}
+}

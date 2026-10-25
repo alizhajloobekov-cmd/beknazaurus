@@ -103,8 +103,7 @@ const watchCards = () => $$('.card').forEach(c => cardObs.observe(c));
    ГЛАВНАЯ
    ==================================================================== */
 function pageHome() {
-  const fresh = published(STORIES).slice(0, 7);
-  const more = published(STORIES).slice(7, 14);
+  const fresh = published(STORIES).filter(s => s.slug !== 'sezim').slice(0, 3);
   const feat = story('sezim');
   return '' +
   /* 1. Первый экран — видео */
@@ -169,8 +168,7 @@ function pageHome() {
   '<section class="fh-cards">' +
     fig(PIC('water-md'), { cls: 'fh-img', alt: '', sizes: '100vw' }) +
     '<div class="wrap">' +
-      '<div class="cards">' + fresh.map(s => card(s)).join('') + '</div>' +
-      (more.length ? '<div class="cards" style="margin-top:28px">' + more.map(s => card(s)).join('') + '</div>' : '') +
+      '<div class="cards fh-three">' + fresh.map(s => card(s)).join('') + '</div>' +
       '<p class="fh-all"><a class="pill-link" href="#/stories">' + t('ui.allstories') + ' →</a></p>' +
     '</div>' +
   '</section>' +
