@@ -482,9 +482,9 @@ function aboutProject() {
     '<div class="mosaic">' +
       '<a class="m1" href="#/stories/nomad-games">' + fig(PIC('ng-horses-sm'), { alt: 'Всадники на Играх кочевников' }) + '</a>' +
       '<a class="m2" href="#/stories/tolkundanyp">' + fig(PIC('felt-art-sm'), { alt: 'Войлочное панно' }) + '</a>' +
-      '<a class="m3" href="#/stories/kaibar">' + fig(IMG('poster-kaibar'), { alt: 'Музыканты Qaibar' }) + '</a>' +
+      '<a class="m3" href="#/stories/kaibar">' + fig(PIC('poster-kaibar'), { alt: 'Музыканты Qaibar' }) + '</a>' +
       '<a class="m4" href="#/stories/hills">' + fig(PIC('valley-sm'), { alt: 'Горная долина' }) + '</a>' +
-      '<a class="m5" href="#/stories/light-silence">' + fig(IMG('poster-mosque'), { alt: 'Мечеть' }) + '</a>' +
+      '<a class="m5" href="#/stories/light-silence">' + fig(PIC('poster-mosque'), { alt: 'Мечеть' }) + '</a>' +
       '<a class="m6" href="#/stories/tolkundanyp">' + fig(PIC('felt-circle-sm'), { alt: 'Войлочный ковёр' }) + '</a>' +
     '</div>' +
   '</section>' +
