@@ -105,40 +105,73 @@ const watchCards = () => $$('.card').forEach(c => cardObs.observe(c));
 function pageHome() {
   const fresh = published(STORIES).slice(0, 7);
   const more = published(STORIES).slice(7, 14);
+  const feat = story('sezim');
   return '' +
-  '<section class="scr hero-home tone-dark">' +
-    '<video class="bg" autoplay muted loop playsinline preload="auto" poster="' + PIC('hero-poster') + '" aria-label="Девушка в белом платье бежит по зелёному склону">' +
+  /* 1. Первый экран — видео */
+  '<section class="fh fh-hero">' +
+    '<video class="fh-bg" autoplay muted loop playsinline preload="auto" poster="' + PIC('hero-poster') + '" aria-label="Девушка в белом платье бежит по зелёному склону">' +
       '<source src="' + VID('hero-1080') + '" type="video/mp4" media="(max-width: 900px)"><source src="' + VID('hero') + '" type="video/mp4"></video>' +
-    '<div class="hero-txt">' +
-      '<h1 class="display c-yellow">BEKNAZAURUS</h1>' +
-      '<p class="hero-sub">Исследую Кыргызстан через людей,<br>которые его создают.</p>' +
+    '<div class="fh-hero-txt">' +
+      '<h1 class="fh-t78">BEKNAZAURUS</h1>' +
+      '<p class="fh-sub35">Исследую Кыргызстан через людей,<br>которые его создают.</p>' +
     '</div>' +
   '</section>' +
 
-  '<section class="scr scr-top bw">' +
-    fig(PIC('author-lake'), { cls: 'bg', alt: 'Бекназар у озера' }) +
-    '<div class="scr-txt rv">' +
-      '<h2 class="display c-green">Меня зовут Бекназар Сейит</h2>' +
-      '<p class="c-orange strong">Я снимаю кино, фотографии и истории о Кыргызстане.<br>Я хочу показать её такой, какой вижу сам.</p>' +
-      '<a class="pill-link" href="#/about/author">Об авторе →</a>' +
+  /* 2. Коллаж — о проекте */
+  '<section class="fh fh-collage">' +
+    '<div class="fh-top">' +
+      '<h2 class="fh-t47 c-gold">BEKNAZAURUS</h2>' +
+      '<p class="fh-p22 fh-col-p">Я хочу, чтобы однажды человек на другом конце мира услышал:<br>где-то в Центральной Азии есть Кыргызстан.<br>Страна с удивительными местами, богатой историей, живой культурой и людьми,<br>которые каждый день что-то создают.</p>' +
+    '</div>' +
+    '<div class="fh-mosaic">' +
+      '<a class="m1" href="#/stories/nomad-games">' + fig(PIC('ng-horses-sm'), { alt: 'Всадники на Играх кочевников', sizes: '18vw' }) + '</a>' +
+      '<a class="m2" href="#/stories/tolkundanyp">' + fig(PIC('felt-art-sm'), { alt: 'Войлочное панно', sizes: '18vw' }) + '</a>' +
+      '<a class="m3" href="#/stories/kaibar">' + fig(PIC('poster-kaibar'), { alt: 'Музыканты Qaibar' }) + '</a>' +
+      '<a class="m4" href="#/stories/hills">' + fig(PIC('valley-sm'), { alt: 'Горная долина', sizes: '30vw' }) + '</a>' +
+      '<a class="m5" href="#/stories/light-silence">' + fig(PIC('poster-mosque'), { alt: 'Мечеть' }) + '</a>' +
+      '<a class="m6" href="#/stories/tolkundanyp">' + fig(PIC('felt-circle-sm'), { alt: 'Войлочный ковёр', sizes: '20vw' }) + '</a>' +
     '</div>' +
   '</section>' +
 
-  '<section class="scr scr-top warm beach">' +
-    fig(PIC('beach'), { cls: 'bg', alt: 'Мама и ребёнок на берегу на закате' }) +
-    '<div class="scr-txt rv">' +
-      '<h2 class="display c-brown">BEKNAZAURUS</h2>' +
-      '<p class="sub-green">Авторское документальное медиа</p>' +
-      '<p>Я чувствую, что родился именно для этого — рассказывать миру о своей стране.<br>Делать заметнее её людей.<br>Популяризировать её культуру и историю.</p>' +
-    '</div>' +
-    '<p class="scr-foot rv">BEKNAZAURUS — мой способ рассказывать об этом.</p>' +
+  /* 3. Об авторе */
+  '<section class="fh fh-author">' +
+    fig(PIC('author-lake'), { cls: 'fh-img', alt: 'Бекназар у озера', sizes: '100vw' }) +
+    '<a class="fh-top" href="#/about/author">' +
+      '<h2 class="fh-t40 c-green">Меня зовут Бекназар Сейит</h2>' +
+      '<p class="fh-p22 fh-bold c-orange">Я снимаю кино, фотографии и истории о Кыргызстане.<br>Я хочу показать её такой,<br>какой вижу сам.</p>' +
+    '</a>' +
   '</section>' +
 
-  '<section class="fresh">' +
+  /* 4. Авторское медиа */
+  '<section class="fh fh-media">' +
+    fig(PIC('beach'), { cls: 'fh-img', alt: 'Мама и ребёнок на берегу на закате', sizes: '100vw' }) +
+    '<div class="fh-top">' +
+      '<h2 class="fh-t63 c-brown">BEKNAZAURUS</h2>' +
+      '<p class="fh-sub34 c-green">Авторское документальное медиа</p>' +
+      '<p class="fh-p22 fh-media-p">Я чувствую, что родился именно для этого — рассказывать миру о своей стране.<br>Делать заметнее её людей.<br>Популяризировать её культуру и историю.</p>' +
+    '</div>' +
+    '<p class="fh-foot">BEKNAZAURUS — мой способ рассказывать об этом.</p>' +
+  '</section>' +
+
+  /* 5. Истории — большая карточка */
+  '<section class="fh fh-stories">' +
+    fig(PIC('coast'), { cls: 'fh-img', alt: '', sizes: '100vw' }) +
+    '<div class="fh-top">' +
+      '<h2 class="fh-t47 c-rust">Истории</h2>' +
+      '<p class="fh-p22 fh-light">Ищу. Создаю. Рассказываю.<br>Так, как вижу.<br>Так, как чувствую.</p>' +
+    '</div>' +
+    (feat ? '<a class="fh-feat" href="#/stories/' + feat.slug + '">' +
+      '<video autoplay muted loop playsinline preload="metadata" poster="media/stories/sezim/frame-01.jpg" src="' + VID('sezim-trailer') + '"></video>' +
+      '<span class="fh-feat-cap"><b>' + esc(feat.title) + '</b> · ' + esc(feat.excerpt) + '</span></a>' : '') +
+  '</section>' +
+
+  /* 6. Ряд карточек */
+  '<section class="fh-cards">' +
+    fig(PIC('water-md'), { cls: 'fh-img', alt: '', sizes: '100vw' }) +
     '<div class="wrap">' +
-      '<div class="row-head"><h2 class="display sm">Новые истории</h2><a class="pill-link" href="#/stories">' + t('ui.allstories') + ' →</a></div>' +
       '<div class="cards">' + fresh.map(s => card(s)).join('') + '</div>' +
       (more.length ? '<div class="cards" style="margin-top:28px">' + more.map(s => card(s)).join('') + '</div>' : '') +
+      '<p class="fh-all"><a class="pill-link" href="#/stories">' + t('ui.allstories') + ' →</a></p>' +
     '</div>' +
   '</section>' +
 
@@ -146,13 +179,11 @@ function pageHome() {
 }
 
 function travelCta() {
-  return '<section class="scr travel-cta">' + fig(PIC('water-md'), { cls: 'bg', alt: '' }) +
-    '<div class="tc-in">' +
-      '<h2 class="rv">А если однажды захотите увидеть<br>всё это сами —<br>поехали.</h2>' +
-      '<a class="tc-card rv" href="#/travel">' + fig(PIC('water-sm'), { alt: 'Человек входит в озеро на закате' }) +
-        '<span class="tc-btn">Путешествия →</span></a>' +
-      '<p class="tc-cap rv">Путешествия с BEKNAZAURUS</p>' +
-    '</div>' +
+  return '<section class="fh fh-cta">' + fig(PIC('sunset-v'), { cls: 'fh-img', alt: '', sizes: '100vw' }) +
+    '<h2 class="fh-cta-t">А если однажды захотите увидеть<br>всё это сами —<br>поехали.</h2>' +
+    '<a class="fh-cta-card" href="#/travel">' + fig(PIC('water-sm'), { alt: 'Человек входит в озеро на закате', sizes: '34vw' }) +
+      '<span class="tc-btn">Путешествия →</span></a>' +
+    '<p class="fh-cta-cap">Путешествия с BEKNAZAURUS</p>' +
   '</section>';
 }
 
@@ -713,10 +744,13 @@ function route() {
   const sn = $('.subnav'), act = sn && $('a.active', sn);
   if (act) sn.scrollLeft = act.offsetLeft - (sn.clientWidth - act.offsetWidth) / 2;
 }
+let lastY = 0;
 function updateHeader() {
-  const solid = scrollY > 40;
+  const y = scrollY, solid = y > 40;
   hdr.classList.toggle('solid', solid);
   hdr.classList.toggle('light', !solid && tone === 'light');
+  // при прокрутке вниз шапка прячется, при прокрутке вверх — появляется
+  if (Math.abs(y - lastY) > 6) { hdr.classList.toggle('hide', y > lastY && y > 300 && sBox.hidden); lastY = y; }
 }
 window.addEventListener('scroll', updateHeader, { passive: true });
 window.addEventListener('hashchange', route);
