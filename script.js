@@ -38,13 +38,30 @@ const work = slug => WORKS.find(x => x.slug === slug && x.status === 'published'
 
 /* ---------- медиа с заглушкой ---------- */
 // Если файла нет — показываем заглушку с подписью, какой файл положить.
+// Фото из media/img хранятся в трёх размерах: name-sm (1200px), name-md (2400px) и name (оригинал).
+// Браузер сам выбирает нужный под экран; в увеличенном просмотре всегда открывается оригинал.
+function imgSet(src) {
+  const m = /media\/img\/([\w-]+?)(-sm|-md)?\.jpg$/.exec(src || '');
+  const dm = m && typeof IMGDIMS !== 'undefined' && IMGDIMS[m[1]];
+  if (!dm) return null;
+  const base = 'media/img/' + m[1], w = dm[0], h = dm[1];
+  const at = L => w >= h ? Math.min(L, w) : Math.round(Math.min(L, h) * w / h);
+  return { full: base + '.jpg', srcset: base + '-sm.jpg ' + at(1200) + 'w, ' + base + '-md.jpg ' + at(2400) + 'w, ' + base + '.jpg ' + w + 'w' };
+}
+function imgTag(src, opt) {
+  opt = opt || {};
+  const set = imgSet(src);
+  const sizes = opt.sizes || (/\b(bg|mv)\b/.test(opt.cls || '') ? '100vw' : '(max-width:700px) 50vw, 25vw');
+  return '<img src="' + esc(src) + '"' + (set ? ' srcset="' + set.srcset + '" sizes="' + sizes + '"' : '') +
+    (opt.fallback ? ' data-fb="' + esc(opt.fallback) + '"' : '') +
+    ' alt="' + esc(opt.alt || '') + '"' + (opt.eager ? '' : ' loading="lazy"') + ' decoding="async"' +
+    (opt.zoom ? ' data-zoom data-full="' + esc(set ? set.full : src) + '"' : '') + '>';
+}
 function fig(src, opt) {
   opt = opt || {};
   const label = opt.label || (src || '').split('/').slice(-3).join('/');
   return '<figure class="ph ' + (opt.cls || '') + '" data-label="' + esc(label) + '"' + (opt.style ? ' style="' + opt.style + '"' : '') + '>' +
-    (src ? '<img src="' + esc(src) + '"' + (opt.fallback ? ' data-fb="' + esc(opt.fallback) + '"' : '') +
-      ' alt="' + esc(opt.alt || '') + '"' + (opt.eager ? '' : ' loading="lazy"') + ' decoding="async"' + (opt.zoom ? ' data-zoom' : '') + '>' : '') +
-    '</figure>';
+    (src ? imgTag(src, opt) : '') + '</figure>';
 }
 document.addEventListener('error', e => {
   const el = e.target;
@@ -63,7 +80,7 @@ function card(s, opt) {
   const soon = s.status === 'soon';
   const media = s.cover && s.cover.video
     ? '<figure class="ph"><video class="mv" muted loop playsinline preload="none" poster="' + esc(s.cover.img) + '" data-src="' + esc(s.cover.video) + '"></video></figure>'
-    : fig(s.cover && s.cover.img, { fallback: s.cover && s.cover.fallback, label: s.title, alt: s.title });
+    : fig(s.cover && s.cover.img, { fallback: s.cover && s.cover.fallback, label: s.title, alt: s.title, sizes: '(max-width:480px) 50vw, (max-width:960px) 25vw, 15vw' });
   const meta = s.tag ? s.tag : s.cats.map(catName).join(' · ') + (s.place && !opt.noPlace ? ' · ' + s.place : '');
   const inner = '<div class="poster">' + media +
     '<span class="fmt">' + esc(soon ? t('ui.soon') : s.type) + '</span>' +
@@ -128,7 +145,7 @@ function pageHome() {
 }
 
 function travelCta() {
-  return '<section class="scr travel-cta">' + fig(PIC('lake-dusk'), { cls: 'bg', alt: '' }) +
+  return '<section class="scr travel-cta">' + fig(PIC('water-md'), { cls: 'bg', alt: '' }) +
     '<div class="tc-in">' +
       '<h2 class="rv">А если однажды захотите увидеть<br>всё это сами —<br>поехали.</h2>' +
       '<a class="tc-card rv" href="#/travel">' + fig(PIC('water-sm'), { alt: 'Человек входит в озеро на закате' }) +
@@ -239,7 +256,7 @@ const BLOCKS = {
 
   'photos': b =>
     '<section class="b-photos"><div class="gal">' +
-      b.items.map(n => { const src = n.indexOf('/') > -1 ? n : PIC(n); return '<img src="' + src.replace('.jpg', '-sm.jpg') + '" data-full="' + src + '" alt="" loading="lazy" decoding="async" data-zoom>'; }).join('') +
+      b.items.map(n => imgTag(n.indexOf('/') > -1 ? n : PIC(n + '-sm'), { zoom: true, sizes: '(max-width:700px) 100vw, 33vw' })).join('') +
     '</div></section>',
 
   'film': b =>
@@ -397,7 +414,7 @@ function pageTrip(x) {
     row('Что входит', list(x.includes)) +
     row('Что не входит', list(x.excludes)) +
     row('Экспедиция', list(x.points)) +
-    (x.gallery ? '<div class="gal small">' + x.gallery.map(n => '<img src="' + PIC(n + '-sm') + '" data-full="' + PIC(n) + '" alt="" loading="lazy" data-zoom>').join('') + '</div>' : '') +
+    (x.gallery ? '<div class="gal small">' + x.gallery.map(n => imgTag(PIC(n + '-sm'), { zoom: true })).join('') + '</div>' : '') +
     (x.demo ? '<p class="draft">Это демонстрационная страница: она показывает структуру будущего путешествия. Финальные данные появятся позже.</p>' : '') +
   '</div></section>' +
   (rel.length ? '<section class="b-related"><div class="wrap"><h2 class="display md">Истории из этой поездки</h2><div class="cards cards-3">' + rel.map(s => card(s)).join('') + '</div></div></section>' : '') +
@@ -436,7 +453,7 @@ function aboutAuthor() {
     '<div><p>Я вырос среди этих гор. Я видел эту страну не только как турист, но как человек, который здесь живёт.</p>' +
     '<p>И однажды понял: я не хочу просто путешествовать по Кыргызстану. Я хочу посвятить жизнь тому, чтобы раскрывать его миру — через настоящие человеческие истории.</p>' +
     '<p class="draft">Текст предварительный. Позже он будет дополнен личной историей и этапами пути.</p></div>' +
-  '</div><div class="wrap"><div class="photo-strip">' + ['director', 'bek-glasses', 'bek-hoodie', 'bek-smile'].map(n => fig(PIC(n + '-sm'), { zoom: true, alt: 'Бекназар Сейит' }).replace('data-zoom', 'data-zoom data-full="' + PIC(n) + '"')).join('') + '</div></div></section>' +
+  '</div><div class="wrap"><div class="photo-strip">' + ['director', 'bek-glasses', 'bek-hoodie', 'bek-smile'].map(n => fig(PIC(n + '-sm'), { zoom: true, alt: 'Бекназар Сейит' })).join('') + '</div></div></section>' +
   '<section class="a-sec"><div class="wrap two">' +
     '<div><p class="label">Путь</p><h2 class="display md">Ключевые этапы</h2></div>' +
     '<ol class="timeline">' +
@@ -446,7 +463,7 @@ function aboutAuthor() {
       '<li><b>—</b><span>«My Hero» — оператор-постановщик короткометражного фильма.</span></li>' +
       '<li><b>2026</b><span>Всемирные игры кочевников — фоторепортаж.</span></li>' +
     '</ol>' +
-  '</div><div class="wrap"><p class="label" style="margin-top:56px">За кадром</p><div class="photo-strip">' + ['bts-camera', 'bts-crew', 'bts-field', 'bts-bw'].map(n => fig(PIC(n + '-sm'), { zoom: true, alt: 'Съёмочный процесс' }).replace('data-zoom', 'data-zoom data-full="' + PIC(n) + '"')).join('') + '</div></div></section>' +
+  '</div><div class="wrap"><p class="label" style="margin-top:56px">За кадром</p><div class="photo-strip">' + ['bts-camera', 'bts-crew', 'bts-field', 'bts-bw'].map(n => fig(PIC(n + '-sm'), { zoom: true, alt: 'Съёмочный процесс' })).join('') + '</div></div></section>' +
   '<section class="a-sec dark"><div class="wrap two">' +
     '<div><p class="label">Философия</p><p class="display md">Жаратыш үчүн жаралгам.</p><p class="big muted">Я рождён, чтобы созидать.</p></div>' +
     '<div><p>Созидать — значит оставлять после себя что-то ценное: истории, фильмы, фотографии, вдохновение, память, людей.</p>' +
@@ -684,6 +701,7 @@ function route() {
   app.innerHTML = html;
   app.className = 'pg-' + cls;
   tone = pageTone;
+  document.body.classList.toggle('home-light', cls === 'home');
   document.body.classList.toggle('dark-page', cls === 'story-page' && /t-cinema/.test(html.slice(0, 40)));
   setMeta(title, desc);
   $$('#mainnav a').forEach(a => a.classList.toggle('active', a.dataset.nav === nav));

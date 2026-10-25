@@ -177,12 +177,12 @@ const STORIES = [
     slug: 'kaibar', status: 'published', title: 'Qaibar', keywords: 'Кайбар комуз музыка Ulu too',
     type: 'Video', cats: ['culture', 'people'], place: 'Кыргызстан',
     excerpt: 'Традиционная музыка. Современный язык.',
-    cover: { img: IMG('poster-kaibar'), video: VID('loop-kaibar') },
+    cover: { img: PIC('poster-kaibar'), video: VID('loop-kaibar') },
     seo: { title: 'Qaibar — музыка и культура Кыргызстана', description: 'Музыканты Qaibar с комузами в юрте.' },
     blocks: [
-      { t: 'hero', video: VID('loop-kaibar'), img: IMG('poster-kaibar'), vertical: true },
+      { t: 'hero', video: VID('loop-kaibar'), img: PIC('poster-kaibar'), vertical: true },
       { t: 'text', paras: ['Музыканты Qaibar с комузами в юрте: музыка и культура Кыргызстана. Продюсер, режиссёр, оператор — Бекназар.', 'Нам хотелось показать, что национальная музыка может звучать современно и находить отклик у молодого поколения.'], draft: true },
-      { t: 'player', src: VID('full-kaibar'), poster: IMG('poster-kaibar'), vertical: true, caption: 'Ulu too · полная версия' },
+      { t: 'player', src: VID('full-kaibar'), poster: PIC('poster-kaibar'), vertical: true, caption: 'Ulu too · полная версия' },
       { t: 'quote', text: 'Красота рождается из смысла.' },
       { t: 'workref', work: 'qaibar' },
       { t: 'related', title: 'Ещё истории' }
@@ -228,11 +228,11 @@ const STORIES = [
     slug: 'tolkundanyp', status: 'published', title: 'Tolkundanyp',
     type: 'Video', cats: ['culture', 'people'], place: 'Кыргызстан',
     excerpt: 'Руки, которые создают узор: войлочный ковёр.',
-    cover: { img: IMG('poster-tolkundanyp'), video: VID('loop-tolkundanyp') },
+    cover: { img: PIC('poster-tolkundanyp'), video: VID('loop-tolkundanyp') },
     blocks: [
-      { t: 'hero', video: VID('loop-tolkundanyp'), img: IMG('poster-tolkundanyp'), vertical: true },
+      { t: 'hero', video: VID('loop-tolkundanyp'), img: PIC('poster-tolkundanyp'), vertical: true },
       { t: 'text', paras: ['Руки, которые создают узор: ручная работа над войлочным ковром. Фильм о тех, кто созидает — медленно, вручную, по-настоящему.'], draft: true },
-      { t: 'player', src: VID('full-tolkundanyp'), poster: IMG('poster-tolkundanyp'), vertical: true },
+      { t: 'player', src: VID('full-tolkundanyp'), poster: PIC('poster-tolkundanyp'), vertical: true },
       { t: 'photos', items: ['felt-art', 'felt-circle', 'felt-spread', 'felt-art2'] },
       { t: 'quote', text: 'Созидать — значит оставлять после себя что-то ценное.' },
       { t: 'related', title: 'Ещё истории' }
@@ -268,11 +268,11 @@ const STORIES = [
     slug: 'light-silence', status: 'published', title: 'Свет и тишина',
     type: 'Video', cats: ['culture', 'places'], place: 'Кыргызстан',
     excerpt: 'Мечеть: арки, купола и человек в луче света.',
-    cover: { img: IMG('poster-mosque'), video: VID('loop-mosque') },
+    cover: { img: PIC('poster-mosque'), video: VID('loop-mosque') },
     blocks: [
-      { t: 'hero', video: VID('loop-mosque'), img: IMG('poster-mosque') },
+      { t: 'hero', video: VID('loop-mosque'), img: PIC('poster-mosque') },
       { t: 'text', paras: ['Мечеть: арки, купола и человек в луче света.'], draft: true },
-      { t: 'player', src: VID('full-mosque'), poster: IMG('poster-mosque') },
+      { t: 'player', src: VID('full-mosque'), poster: PIC('poster-mosque') },
       { t: 'quote', text: 'Медленный контент живёт дольше.' },
       { t: 'related', title: 'Ещё истории' }
     ]
@@ -364,7 +364,7 @@ const WORK_CATS = ['Документальное кино', 'Музыкальн�
 const WORKS = [
   {
     slug: 'qaibar', status: 'published', title: 'QAIBAR', year: '',
-    cat: 'Музыкальные клипы и музыка', cover: IMG('poster-kaibar'), video: VID('full-kaibar'), vertical: true,
+    cat: 'Музыкальные клипы и музыка', cover: PIC('poster-kaibar'), video: VID('full-kaibar'), vertical: true,
     tagline: 'Традиционная музыка. Современный язык. Новое поколение.',
     excerpt: 'Музыкальный проект о кыргызской национальной музыке.',
     about: 'QAIBAR — музыкальный проект, созданный вместе с друзьями-музыкантами, чтобы показать кыргызскую национальную музыку по-новому. В рамках проекта я отвечал за съёмку, визуальную подачу, продюсирование контента и продвижение. Нам хотелось показать, что национальная музыка может звучать современно и находить отклик у молодого поколения.',
