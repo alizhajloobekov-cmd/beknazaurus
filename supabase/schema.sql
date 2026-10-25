@@ -36,7 +36,8 @@ $$;
 create or replace function public.protect_role() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
-  if new.role is distinct from old.role and not public.is_admin() then
+  -- через сайт роль может менять только администратор; команды из SQL Editor (auth.uid() пусто) разрешены
+  if new.role is distinct from old.role and auth.uid() is not null and not public.is_admin() then
     new.role := old.role;
   end if;
   return new;
