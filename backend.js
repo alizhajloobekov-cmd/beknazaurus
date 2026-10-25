@@ -71,10 +71,11 @@
     BK.profile = data || null;
   }
   BK.init = async function () {
-    if (!on) return;
+    if (!on) { BK.ready = true; return; }
     const { data: { session } } = await db.auth.getSession();
     BK.user = session ? session.user : null;
     await Promise.all([loadProfile(), BK.loadContent()]);
+    BK.ready = true;
     db.auth.onAuthStateChange(async (_e, s) => {
       const was = BK.user && BK.user.id;
       BK.user = s ? s.user : null;

@@ -19,6 +19,8 @@
   /* ============ ВХОД / РЕГИСТРАЦИЯ ============ */
   function authPage(mode) {
     if (!BK.on) return notConnected();
+    if (!BK.ready) return '<section class="auth"><div class="auth-box"><p class="muted">Загрузка…</p></div></section>';
+    if (BK.user) { const nx = new URLSearchParams(location.hash.split('?')[1] || '').get('next'); location.replace(nx || '#/account'); return ''; }
     const reg = mode === 'register';
     return '<section class="auth"><form class="auth-box" id="authForm" data-mode="' + mode + '">' +
       '<p class="label">BEKNAZAURUS</p><h1 class="display md">' + (reg ? 'Регистрация' : 'Вход') + '</h1>' +
@@ -67,6 +69,7 @@
   /* ============ ЛИЧНЫЙ КАБИНЕТ ============ */
   function accountPage() {
     if (!BK.on) return notConnected();
+    if (!BK.ready) return '<section class="auth"><div class="auth-box"><p class="muted">Загрузка…</p></div></section>';
     if (!BK.user) { location.replace('#/login?next=' + encodeURIComponent('#/account')); return ''; }
     const p = new URLSearchParams(location.hash.split('?')[1] || '');
     return '<section class="auth acc"><div class="acc-box">' +
@@ -171,6 +174,7 @@
 
   function adminPage(sub, slug) {
     if (!BK.on) return notConnected();
+    if (!BK.ready) return '<section class="auth"><div class="auth-box"><p class="muted">Загрузка…</p></div></section>';
     if (!BK.user) { location.replace('#/login?next=' + encodeURIComponent('#/admin')); return ''; }
     if (!BK.isAdmin) return '<section class="auth"><div class="auth-box"><h1 class="display md">Нет доступа</h1><p class="muted">Админ-панель доступна только администратору.</p><a class="pill-link" href="#/account">Личный кабинет</a></div></section>';
     const tab = sub || 'stories';
