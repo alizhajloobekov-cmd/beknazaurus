@@ -196,7 +196,7 @@ const STORIES = [
     blocks: [
       { t: 'hero', img: PIC('at-bashy-poster') },
       { t: 'text', paras: ['Музыкальное видео. Описание появится позже.'], draft: true },
-      { t: 'player', src: VID('at-bashy'), poster: PIC('at-bashy-poster') },
+      { t: 'film', title: 'Смотреть', name: 'AT BASHY', youtube: '7WS7jcPSjlo', poster: PIC('at-bashy-poster'), meta: '4K · YouTube', button: 'Открыть на YouTube' },
       { t: 'related', title: 'Ещё истории' }
     ]
   },
@@ -381,7 +381,7 @@ const WORKS = [
   },
   {
     slug: 'at-bashy', status: 'published', title: 'AT-BASHY', year: '',
-    cat: 'Музыкальные клипы и музыка', cover: PIC('at-bashy-poster'), video: VID('at-bashy'),
+    cat: 'Музыкальные клипы и музыка', cover: PIC('at-bashy-poster'), youtube: '7WS7jcPSjlo',
     excerpt: 'Музыкальное видео.', story: 'at-bashy'
   },
   {
