@@ -264,7 +264,7 @@ const BLOCKS = {
     '<section class="b-film"><div class="wrap">' +
       '<h2 class="display md">' + esc(b.title) + '</h2>' +
       '<button class="yt-facade" data-yt="' + b.youtube + '" aria-label="Смотреть: ' + esc(b.name) + '">' +
-        '<img src="' + YT(b.youtube) + '" alt="" loading="lazy"><span class="play">▶ Play</span><span class="fname">' + esc(b.name) + '</span></button>' +
+        '<img src="' + esc(b.poster || YT(b.youtube)) + '" alt="" loading="lazy"><span class="play">▶ Play</span><span class="fname">' + esc(b.name) + '</span></button>' +
       '<div class="film-row"><p class="meta">' + esc(b.meta) + '</p>' +
       '<a class="pill-link light" href="https://www.youtube.com/watch?v=' + b.youtube + '" target="_blank" rel="noopener">' + esc(b.button) + ' →</a></div>' +
     '</div></section>',
@@ -548,6 +548,7 @@ function pageWork(w) {
     row('Кратко', w.excerpt) + row('О проекте', w.about) + row('Задача', w.task) + row('Моя роль', w.role) +
     row('Процесс', w.process) + row('Результат', w.result) + row('Команда', w.team) +
     (w.note ? '<p class="big">' + esc(w.note) + '</p>' : '') +
+    (w.youtube ? '<div class="b-film" style="background:none"><button class="yt-facade" data-yt="' + w.youtube + '" aria-label="Смотреть: ' + esc(w.title) + '"><img src="' + esc(w.cover) + '" alt="" loading="lazy"><span class="play">▶ Play</span><span class="fname">' + esc(w.title) + '</span></button></div>' : '') +
     (w.video ? '<div class="b-player"><video controls playsinline preload="metadata" poster="' + esc(w.cover) + '" src="' + esc(w.video) + '"' + (w.vertical ? ' class="vert"' : '') + '></video></div>' : '') +
     (st ? '<p style="margin-top:40px"><a class="pill-link" href="#/stories/' + st.slug + '">Открыть историю «' + esc(st.title) + '» →</a></p>' : '') +
     '<p style="margin-top:20px"><a class="pill-link ghost" href="#/about/works">← Все работы</a></p>' +
