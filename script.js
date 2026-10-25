@@ -63,11 +63,11 @@ function card(s, opt) {
   const soon = s.status === 'soon';
   const media = s.cover && s.cover.video
     ? '<figure class="ph"><video class="mv" muted loop playsinline preload="none" poster="' + esc(s.cover.img) + '" data-src="' + esc(s.cover.video) + '"></video></figure>'
-    : fig(s.cover && s.cover.img, { fallback: s.cover && s.cover.fallback, label: s.title });
+    : fig(s.cover && s.cover.img, { fallback: s.cover && s.cover.fallback, label: s.title, alt: s.title });
   const meta = s.tag ? s.tag : s.cats.map(catName).join(' · ') + (s.place && !opt.noPlace ? ' · ' + s.place : '');
-  const inner = media +
+  const inner = '<div class="poster">' + media +
     '<span class="fmt">' + esc(soon ? t('ui.soon') : s.type) + '</span>' +
-    (opt.num ? '<span class="num">' + opt.num + '</span>' : '') +
+    (opt.num ? '<span class="num">' + opt.num + '</span>' : '') + '</div>' +
     '<div class="cap"><h3>' + esc(s.title) + '</h3><p>' + esc(s.excerpt) + '</p><p class="meta">' + esc(meta) + '</p></div>';
   return soon
     ? '<div class="card soon" aria-label="' + esc(s.title) + ' — ' + t('ui.soon') + '">' + inner + '</div>'
@@ -86,10 +86,11 @@ const watchCards = () => $$('.card').forEach(c => cardObs.observe(c));
    ГЛАВНАЯ
    ==================================================================== */
 function pageHome() {
-  const fresh = ['sezim', 'bek-adventures', 'kaibar', 'nomad-games'].map(story).filter(Boolean);
+  const fresh = published(STORIES).slice(0, 7);
+  const more = published(STORIES).slice(7, 14);
   return '' +
   '<section class="scr hero-home tone-dark">' +
-    fig(IMG('mock-hero'), { cls: 'bg', eager: true, alt: 'Девушка бежит по зелёному склону' }) +
+    '<video class="bg" autoplay muted loop playsinline preload="auto" poster="' + PIC('hero-poster') + '" src="' + VID('hero') + '" aria-label="Девушка в белом платье с лошадью в горной долине"></video>' +
     '<div class="hero-txt">' +
       '<h1 class="display c-yellow">BEKNAZAURUS</h1>' +
       '<p class="hero-sub">Исследую Кыргызстан через людей,<br>которые его создают.</p>' +
@@ -97,7 +98,7 @@ function pageHome() {
   '</section>' +
 
   '<section class="scr scr-top bw">' +
-    fig(IMG('mock-author'), { cls: 'bg', alt: 'Бекназар у озера' }) +
+    fig(PIC('author-lake'), { cls: 'bg', alt: 'Бекназар у озера' }) +
     '<div class="scr-txt rv">' +
       '<h2 class="display c-green">Меня зовут Бекназар Сейит</h2>' +
       '<p class="c-orange strong">Я снимаю кино, фотографии и истории о Кыргызстане.<br>Я хочу показать её такой, какой вижу сам.</p>' +
@@ -105,8 +106,8 @@ function pageHome() {
     '</div>' +
   '</section>' +
 
-  '<section class="scr scr-top warm">' +
-    fig(IMG('mock-media'), { cls: 'bg', alt: 'Мама и ребёнок на берегу на закате' }) +
+  '<section class="scr scr-top warm beach">' +
+    fig(PIC('beach'), { cls: 'bg', alt: 'Мама и ребёнок на берегу на закате' }) +
     '<div class="scr-txt rv">' +
       '<h2 class="display c-brown">BEKNAZAURUS</h2>' +
       '<p class="sub-green">Авторское документальное медиа</p>' +
@@ -118,7 +119,8 @@ function pageHome() {
   '<section class="fresh">' +
     '<div class="wrap">' +
       '<div class="row-head"><h2 class="display sm">Новые истории</h2><a class="pill-link" href="#/stories">' + t('ui.allstories') + ' →</a></div>' +
-      '<div class="cards cards-row">' + fresh.map(s => card(s)).join('') + '</div>' +
+      '<div class="cards">' + fresh.map(s => card(s)).join('') + '</div>' +
+      (more.length ? '<div class="cards" style="margin-top:28px">' + more.map(s => card(s)).join('') + '</div>' : '') +
     '</div>' +
   '</section>' +
 
@@ -126,10 +128,10 @@ function pageHome() {
 }
 
 function travelCta() {
-  return '<section class="scr travel-cta">' +
+  return '<section class="scr travel-cta">' + fig(PIC('lake-dusk'), { cls: 'bg', alt: '' }) +
     '<div class="tc-in">' +
       '<h2 class="rv">А если однажды захотите увидеть<br>всё это сами —<br>поехали.</h2>' +
-      '<a class="tc-card rv" href="#/travel">' + fig(IMG('mock-travel'), { alt: 'Человек входит в озеро на закате' }) +
+      '<a class="tc-card rv" href="#/travel">' + fig(PIC('water-sm'), { alt: 'Человек входит в озеро на закате' }) +
         '<span class="tc-btn">Путешествия →</span></a>' +
       '<p class="tc-cap rv">Путешествия с BEKNAZAURUS</p>' +
     '</div>' +
@@ -143,7 +145,7 @@ let filter = 'all';
 function pageStories() {
   return '' +
   '<section class="page-hero ph-stories tone-dark">' +
-    fig(IMG('mock-stories'), { cls: 'bg', eager: true, alt: 'Озеро и горы на закате' }) +
+    fig(PIC('lake-dusk'), { cls: 'bg', eager: true, alt: 'Озеро в сумерках' }) +
     '<div class="ph-txt">' +
       '<h1 class="display c-rust">Истории</h1>' +
       '<p class="tagline">Ищу. Создаю. Рассказываю.<br>Так, как вижу.<br>Так, как чувствую.</p>' +
@@ -176,7 +178,8 @@ const BLOCKS = {
   'hero-film': b =>
     '<section class="b-herofilm">' +
       '<div class="yt-bg"><img src="' + esc(b.poster) + '" alt="">' +
-        '<iframe src="' + ytEmbed(b.youtube, true) + '" title="Трейлер" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe></div>' +
+        (b.video ? '<video autoplay muted loop playsinline poster="' + esc(b.poster) + '" src="' + esc(b.video) + '" aria-hidden="true"></video>'
+          : '<iframe src="' + ytEmbed(b.youtube, true) + '" title="Трейлер" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe>') + '</div>' +
       '<div class="hf-txt">' +
         '<h1 class="display huge">' + b.title + '</h1>' +
         '<p class="by">' + esc(b.by) + '</p>' +
@@ -236,7 +239,7 @@ const BLOCKS = {
 
   'photos': b =>
     '<section class="b-photos"><div class="gal">' +
-      b.items.map(n => '<img src="' + IMG(n) + '" alt="" loading="lazy" decoding="async" data-zoom>').join('') +
+      b.items.map(n => { const src = n.indexOf('/') > -1 ? n : PIC(n); return '<img src="' + src.replace('.jpg', '-sm.jpg') + '" data-full="' + src + '" alt="" loading="lazy" decoding="async" data-zoom>'; }).join('') +
     '</div></section>',
 
   'film': b =>
@@ -331,7 +334,7 @@ function pageTravel() {
   const authors = TRAVEL.filter(x => x.kind === 'author'), exps = TRAVEL.filter(x => x.kind === 'expedition'), past = TRAVEL.filter(x => x.kind === 'past');
   return '' +
   '<section class="page-hero ph-travel tone-light">' +
-    fig(IMG('hills-camp'), { cls: 'bg', eager: true, alt: 'Юрточный лагерь в долине' }) +
+    fig(PIC('yurts-sunset'), { cls: 'bg', eager: true, alt: 'Юрты в долине на закате' }) +
     '<div class="ph-txt bottom">' +
       '<h1 class="display c-yellow">Путешествия</h1>' +
       '<p class="hero-sub">Ты уже увидел Кыргызстан моими глазами.<br>Теперь можешь увидеть его своими.</p>' +
@@ -394,7 +397,7 @@ function pageTrip(x) {
     row('Что входит', list(x.includes)) +
     row('Что не входит', list(x.excludes)) +
     row('Экспедиция', list(x.points)) +
-    (x.gallery ? '<div class="gal small">' + x.gallery.map(n => '<img src="' + IMG(n + '-sm') + '" data-full="' + IMG(n) + '" alt="" loading="lazy" data-zoom>').join('') + '</div>' : '') +
+    (x.gallery ? '<div class="gal small">' + x.gallery.map(n => '<img src="' + PIC(n + '-sm') + '" data-full="' + PIC(n) + '" alt="" loading="lazy" data-zoom>').join('') + '</div>' : '') +
     (x.demo ? '<p class="draft">Это демонстрационная страница: она показывает структуру будущего путешествия. Финальные данные появятся позже.</p>' : '') +
   '</div></section>' +
   (rel.length ? '<section class="b-related"><div class="wrap"><h2 class="display md">Истории из этой поездки</h2><div class="cards cards-3">' + rel.map(s => card(s)).join('') + '</div></div></section>' : '') +
@@ -418,7 +421,7 @@ function workCard(w) {
 function aboutAuthor() {
   const featured = published(WORKS).slice(0, 3);
   return '' +
-  '<section class="scr scr-top bw about-hero">' + fig(IMG('mock-author'), { cls: 'bg', eager: true, alt: 'Бекназар Сейит' }) +
+  '<section class="scr scr-top bw about-hero">' + fig(PIC('author-lake'), { cls: 'bg', eager: true, alt: 'Бекназар Сейит' }) +
     '<div class="scr-txt"><h1 class="display c-green">Меня зовут Бекназар Сейит</h1>' +
     '<p class="c-orange strong">Я режиссёр, продюсер и оператор.</p></div></section>' +
   aboutNav('author') +
@@ -433,7 +436,7 @@ function aboutAuthor() {
     '<div><p>Я вырос среди этих гор. Я видел эту страну не только как турист, но как человек, который здесь живёт.</p>' +
     '<p>И однажды понял: я не хочу просто путешествовать по Кыргызстану. Я хочу посвятить жизнь тому, чтобы раскрывать его миру — через настоящие человеческие истории.</p>' +
     '<p class="draft">Текст предварительный. Позже он будет дополнен личной историей и этапами пути.</p></div>' +
-  '</div></section>' +
+  '</div><div class="wrap"><div class="photo-strip">' + ['director', 'bek-glasses', 'bek-hoodie', 'bek-smile'].map(n => fig(PIC(n + '-sm'), { zoom: true, alt: 'Бекназар Сейит' }).replace('data-zoom', 'data-zoom data-full="' + PIC(n) + '"')).join('') + '</div></div></section>' +
   '<section class="a-sec"><div class="wrap two">' +
     '<div><p class="label">Путь</p><h2 class="display md">Ключевые этапы</h2></div>' +
     '<ol class="timeline">' +
@@ -443,7 +446,7 @@ function aboutAuthor() {
       '<li><b>—</b><span>«My Hero» — оператор-постановщик короткометражного фильма.</span></li>' +
       '<li><b>2026</b><span>Всемирные игры кочевников — фоторепортаж.</span></li>' +
     '</ol>' +
-  '</div></section>' +
+  '</div><div class="wrap"><p class="label" style="margin-top:56px">За кадром</p><div class="photo-strip">' + ['bts-camera', 'bts-crew', 'bts-field', 'bts-bw'].map(n => fig(PIC(n + '-sm'), { zoom: true, alt: 'Съёмочный процесс' }).replace('data-zoom', 'data-zoom data-full="' + PIC(n) + '"')).join('') + '</div></div></section>' +
   '<section class="a-sec dark"><div class="wrap two">' +
     '<div><p class="label">Философия</p><p class="display md">Жаратыш үчүн жаралгам.</p><p class="big muted">Я рождён, чтобы созидать.</p></div>' +
     '<div><p>Созидать — значит оставлять после себя что-то ценное: истории, фильмы, фотографии, вдохновение, память, людей.</p>' +
@@ -460,12 +463,12 @@ function aboutProject() {
     '<div class="ch-txt"><h1 class="display c-gold">BEKNAZAURUS</h1>' +
     '<p>Я хочу, чтобы однажды человек на другом конце мира услышал:<br>где-то в Центральной Азии есть Кыргызстан.<br>Страна с удивительными местами, богатой историей, живой культурой и людьми,<br>которые каждый день что-то создают.</p></div>' +
     '<div class="mosaic">' +
-      '<a class="m1" href="#/stories/nomad-games">' + fig(IMG('mock-horses'), { alt: 'Всадники в пыли' }) + '</a>' +
-      '<a class="m2" href="#/stories/tolkundanyp">' + fig(IMG('mock-felt-art'), { alt: 'Войлочное панно' }) + '</a>' +
+      '<a class="m1" href="#/stories/nomad-games">' + fig(PIC('ng-horses-sm'), { alt: 'Всадники на Играх кочевников' }) + '</a>' +
+      '<a class="m2" href="#/stories/tolkundanyp">' + fig(PIC('felt-art-sm'), { alt: 'Войлочное панно' }) + '</a>' +
       '<a class="m3" href="#/stories/kaibar">' + fig(IMG('poster-kaibar'), { alt: 'Музыканты Qaibar' }) + '</a>' +
-      '<a class="m4" href="#/stories/hills">' + fig(IMG('mock-field'), { alt: 'Пастбище' }) + '</a>' +
+      '<a class="m4" href="#/stories/hills">' + fig(PIC('valley-sm'), { alt: 'Горная долина' }) + '</a>' +
       '<a class="m5" href="#/stories/light-silence">' + fig(IMG('poster-mosque'), { alt: 'Мечеть' }) + '</a>' +
-      '<a class="m6" href="#/stories/tolkundanyp">' + fig(IMG('poster-tolkundanyp'), { alt: 'Войлочный ковёр' }) + '</a>' +
+      '<a class="m6" href="#/stories/tolkundanyp">' + fig(PIC('felt-circle-sm'), { alt: 'Войлочный ковёр' }) + '</a>' +
     '</div>' +
   '</section>' +
   aboutNav('project') +
@@ -556,7 +559,7 @@ function aboutServices() {
 
 function aboutPartner() {
   return '' +
-  '<section class="scr scr-top warm about-hero">' + fig(IMG('mock-media'), { cls: 'bg', eager: true, alt: '' }) +
+  '<section class="scr scr-top warm beach about-hero">' + fig(PIC('beach'), { cls: 'bg', eager: true, alt: '' }) +
     '<div class="scr-txt"><h1 class="display c-brown">Партнёрство</h1><p class="sub-green">Давайте вместе рассказывать миру о Кыргызстане.</p></div></section>' +
   aboutNav('partnership') +
   '<section class="a-sec"><div class="narrow">' +

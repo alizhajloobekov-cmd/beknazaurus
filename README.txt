@@ -32,9 +32,10 @@ BEKNAZAURUS — сайт v4 (по ТЗ «Истории», «Путешеств�
   media/stories/bek-adventures/ cover.jpg, page-01.jpg … page-07.jpg (страницы комикса)
   media/stories/naryn/cover.jpg, media/works/kun-tiybes.jpg
 
-ВРЕМЕННЫЕ ФОТО
-  media/photos/mock-*.jpg вырезаны из макетов (низкое разрешение).
-  Замените их оригиналами с теми же именами — сайт подхватит автоматически.
+ФОТО И ВИДЕО
+  media/img/    — фото в высоком качестве (name.jpg — 2400px, name-sm.jpg — для карточек)
+  media/video/  — видео, сжатые для сайта (hero.mp4 — первый экран главной)
+  Все файлы меньше 25 МБ, поэтому их можно загружать через сайт GitHub.
 
 КОНТАКТЫ
   content.js → SITE.contacts (YouTube, Telegram, WhatsApp, email — заполнить).

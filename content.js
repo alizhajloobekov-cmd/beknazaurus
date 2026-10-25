@@ -28,6 +28,7 @@ const SITE = {
 };
 
 const IMG = n => 'media/photos/' + n + '.jpg';
+const PIC = n => 'media/img/' + n + '.jpg';   // фото в высоком качестве
 const VID = n => 'media/video/' + n + '.mp4';
 const YT  = id => 'https://i.ytimg.com/vi/' + id + '/maxresdefault.jpg';
 
@@ -54,11 +55,11 @@ const STORIES = [
     title: 'Сезим', titleEn: 'SEZIM',
     type: 'Film', cats: ['people', 'culture'], place: 'Кыргызстан', date: '2023',
     excerpt: 'Мой первый документальный фильм — о молодом композиторе.',
-    cover: { img: 'media/stories/sezim/cover.jpg', fallback: YT('4g1HHazPp00') },
+    cover: { img: 'media/stories/sezim/cover.jpg', video: VID('sezim-loop'), fallback: YT('4g1HHazPp00') },
     seo: { title: 'СЕЗИМ — короткометражный документальный фильм Бекназара Сейита',
            description: 'Дебютный документальный фильм о 20-летнем композиторе Беке Уркасымове. Кыргызстан, 2023.' },
     blocks: [
-      { t: 'hero-film', youtube: '4g1HHazPp00', poster: YT('4g1HHazPp00'),
+      { t: 'hero-film', video: VID('sezim-trailer'), youtube: '4g1HHazPp00', poster: 'media/stories/sezim/frame-01.jpg',
         title: 'СЕЗИМ', by: 'A short documentary film by Beknazar Seyit',
         meta: 'Kyrgyzstan · 2023 · Documentary',
         line: 'История молодого композитора, который проживает свою жизнь через музыку.' },
@@ -156,7 +157,24 @@ const STORIES = [
 
   /* ============ Остальные истории (тексты — рабочие черновики) ============ */
   {
-    slug: 'kaibar', status: 'published', title: 'Qaibar', keywords: 'Кайбар комуз музыка',
+    slug: 'avletim', status: 'published', title: 'Авлетим', titleEn: 'AVLETIM',
+    type: 'Video', cats: ['places', 'people'], place: 'Аксы', keywords: 'Аксы Эч качан айыл село',
+    excerpt: 'Место, которое я помню с детства.',
+    travel: 'aksy',
+    cover: { img: PIC('tree-v-sm'), video: VID('avletim-loop') },
+    seo: { title: 'Авлетим — история села в Аксы', description: 'Видеоистория BEKNAZAURUS о селе Авлетим в Аксы, где вырос автор.' },
+    blocks: [
+      { t: 'hero', video: VID('avletim-loop'), img: PIC('avletim-poster') },
+      { t: 'text', title: 'История села, которое осталось во мне', paras: ['Авлетим — село в Аксы, где я вырос. Холмы, одинокое дерево на вершине, дороги между полями и люди, которых я знаю с детства.'], draft: true },
+      { t: 'player', src: VID('avletim'), poster: PIC('avletim-poster'), caption: 'BEKNAZAURUS #3 · Эч качан — Аксы, Авлетим айылы' },
+      { t: 'photos', items: ['tree-hill', 'tree-v', 'fields'] },
+      { t: 'quote', text: 'Есть места, которые остаются в тебе навсегда.' },
+      { t: 'travel-link' },
+      { t: 'related', title: 'Ещё истории' }
+    ]
+  },
+  {
+    slug: 'kaibar', status: 'published', title: 'Qaibar', keywords: 'Кайбар комуз музыка Ulu too',
     type: 'Video', cats: ['culture', 'people'], place: 'Кыргызстан',
     excerpt: 'Традиционная музыка. Современный язык.',
     cover: { img: IMG('poster-kaibar'), video: VID('loop-kaibar') },
@@ -171,6 +189,42 @@ const STORIES = [
     ]
   },
   {
+    slug: 'at-bashy', status: 'published', title: 'At-Bashy', keywords: 'Ат-Башы музыка ансамбль клип',
+    type: 'Video', cats: ['culture'], place: 'Кыргызстан',
+    excerpt: 'Музыкальное видео.',
+    cover: { img: PIC('at-bashy-poster') },
+    blocks: [
+      { t: 'hero', img: PIC('at-bashy-poster') },
+      { t: 'text', paras: ['Музыкальное видео. Описание появится позже.'], draft: true },
+      { t: 'player', src: VID('at-bashy'), poster: PIC('at-bashy-poster') },
+      { t: 'related', title: 'Ещё истории' }
+    ]
+  },
+  {
+    slug: 'attila-duet', status: 'published', title: 'Attila Han Duet', keywords: 'Аттила дуэт комуз',
+    type: 'Video', cats: ['culture', 'people'], place: 'Кыргызстан',
+    excerpt: 'Дуэт, комуз и юрта.',
+    cover: { img: PIC('attila-poster'), video: VID('attila-loop') },
+    blocks: [
+      { t: 'hero', video: VID('attila-loop'), img: PIC('attila-poster'), vertical: true },
+      { t: 'text', paras: ['Музыкальное видео. Описание появится позже.'], draft: true },
+      { t: 'player', src: VID('attila-duet'), poster: PIC('attila-poster'), vertical: true },
+      { t: 'related', title: 'Ещё истории' }
+    ]
+  },
+  {
+    slug: 'frunze-ensemble', status: 'published', title: 'Music in Frunze', keywords: 'Фрунзе ансамбль музыка',
+    type: 'Video', cats: ['culture', 'people'], place: 'Бишкек',
+    excerpt: 'Ансамбль, который играет вместе.',
+    cover: { img: PIC('frunze-poster'), video: VID('frunze-loop') },
+    blocks: [
+      { t: 'hero', video: VID('frunze-loop'), img: PIC('frunze-poster'), vertical: true },
+      { t: 'text', paras: ['Музыкальное видео. Описание появится позже.'], draft: true },
+      { t: 'player', src: VID('frunze'), poster: PIC('frunze-poster'), vertical: true },
+      { t: 'related', title: 'Ещё истории' }
+    ]
+  },
+  {
     slug: 'tolkundanyp', status: 'published', title: 'Tolkundanyp',
     type: 'Video', cats: ['culture', 'people'], place: 'Кыргызстан',
     excerpt: 'Руки, которые создают узор: войлочный ковёр.',
@@ -179,6 +233,7 @@ const STORIES = [
       { t: 'hero', video: VID('loop-tolkundanyp'), img: IMG('poster-tolkundanyp'), vertical: true },
       { t: 'text', paras: ['Руки, которые создают узор: ручная работа над войлочным ковром. Фильм о тех, кто созидает — медленно, вручную, по-настоящему.'], draft: true },
       { t: 'player', src: VID('full-tolkundanyp'), poster: IMG('poster-tolkundanyp'), vertical: true },
+      { t: 'photos', items: ['felt-art', 'felt-circle', 'felt-spread', 'felt-art2'] },
       { t: 'quote', text: 'Созидать — значит оставлять после себя что-то ценное.' },
       { t: 'related', title: 'Ещё истории' }
     ]
@@ -187,12 +242,25 @@ const STORIES = [
     slug: 'nomad-games', status: 'published', title: 'Игры кочевников',
     type: 'Photo story', cats: ['culture', 'people'], place: 'Кыргызстан · 2026', date: '2026',
     excerpt: 'Ночь, всадники и огни арены.',
-    cover: { img: IMG('ng-1-sm') },
+    cover: { img: PIC('ng-fire2-sm') },
     blocks: [
-      { t: 'hero', img: IMG('ng-1') },
+      { t: 'hero', img: PIC('ng-horses') },
       { t: 'text', paras: ['Ночь, всадники и огни арены: фоторепортаж с Всемирных игр кочевников 2026.'], draft: true },
-      { t: 'photos', items: ['ng-2', 'ng-3', 'ng-4', 'ng-5', 'ng-6', 'ng-7', 'ng-8'] },
+      { t: 'photos', items: ['ng-fire', 'ng-fire2', 'ng-show', 'ng-arena', 'ng-crown', 'ng-phone', 'ng-banner', 'ng-stadium', 'ng-guard', 'ng-guards'] },
       { t: 'quote', text: 'История важнее красивой картинки.' },
+      { t: 'related', title: 'Ещё истории' }
+    ]
+  },
+  {
+    slug: 'behind-the-scenes', status: 'published', title: 'За кадром',
+    type: 'Photo story', cats: ['people'], place: 'Съёмочные площадки',
+    excerpt: 'Камеры, свет и люди, с которыми мы создаём истории.',
+    cover: { img: PIC('bts-camera-sm') },
+    blocks: [
+      { t: 'hero', img: PIC('bts-studio') },
+      { t: 'text', paras: ['Съёмочные площадки, камеры, свет и люди, с которыми мы создаём истории.'], draft: true },
+      { t: 'photos', items: ['bts-camera', 'bts-crew', 'bts-field', 'bts-rig', 'bts-bw', 'bts-bw2', 'bts-silhouette', 'bts-yurt', 'bts-piano'] },
+      { t: 'quote', text: 'Иногда за кадром происходит не меньше, чем в самом фильме.' },
       { t: 'related', title: 'Ещё истории' }
     ]
   },
@@ -213,11 +281,11 @@ const STORIES = [
     slug: 'issyk-kul', status: 'published', title: 'Иссык-Куль с высоты',
     type: 'Photo', cats: ['places', 'journey'], place: 'Иссык-Куль',
     excerpt: 'Бирюзовые бухты, красный песок и синева озера.',
-    cover: { img: IMG('lake-sunset-v-sm') },
+    cover: { img: PIC('sunset-v-sm') },
     blocks: [
-      { t: 'hero', img: IMG('lake-bay-1') },
+      { t: 'hero', img: PIC('bay') },
       { t: 'text', paras: ['Бирюзовые бухты, красный песок и синева большого озера — взгляд сверху.'], draft: true },
-      { t: 'photos', items: ['lake-bay-2', 'lake-bay-3', 'lake-boat', 'lake-boat-close', 'lake-sunset', 'lake-blue', 'lake-red-1', 'lake-red-2', 'lake-coast', 'lake-sunset-v'] },
+      { t: 'photos', items: ['bay2', 'boat', 'red-shore', 'coast', 'lake-dusk', 'sunset-v', 'camp', 'chess'] },
       { t: 'quote', text: 'Красивых мест много. Истории людей уникальны.' },
       { t: 'related', title: 'Ещё истории' }
     ]
@@ -226,27 +294,23 @@ const STORIES = [
     slug: 'hills', status: 'published', title: 'Горы и пастбища',
     type: 'Photo', cats: ['places', 'journey'], place: 'Кыргызстан',
     excerpt: 'Юрты на склонах и долины в вечернем свете.',
-    travel: 'aksy',
-    cover: { img: IMG('hills-field-v-sm') },
+    cover: { img: PIC('mountain-sm') },
     blocks: [
-      { t: 'hero', img: IMG('hills-yurts-1') },
-      { t: 'text', paras: ['Юрты на зелёных склонах, одинокое дерево и долины в вечернем свете.'], draft: true },
-      { t: 'photos', items: ['hills-valley', 'hills-yurts-2', 'hills-camp', 'hills-canyon', 'hills-vertical', 'hills-tree-1', 'hills-tree-2', 'hills-fields', 'hills-field-v'] },
+      { t: 'hero', img: PIC('yurts-green') },
+      { t: 'text', paras: ['Юрты на зелёных склонах, горные долины и вечерний свет.'], draft: true },
+      { t: 'photos', items: ['valley', 'yurts-sunset', 'canyon', 'mountain', 'yurt-door', 'yurt-swing', 'fortress', 'window', 'cooking'] },
       { t: 'quote', text: 'Люди важнее достопримечательностей.' },
-      { t: 'travel-link' },
       { t: 'related', title: 'Ещё истории' }
     ]
   },
 
   /* ============ Анонсы (status: 'soon') — появятся позже ============ */
-  { slug: 'avletim', status: 'soon', title: 'Авлетим', type: 'Article', cats: ['places'], place: 'Аксы',
-    excerpt: 'История села, которое осталось во мне.', tag: 'Places', travel: 'aksy', cover: { img: IMG('hills-tree-2-sm') } },
   { slug: 'too-ashuu', status: 'soon', title: 'Төө-Ашуу', type: 'Article', cats: ['places'], place: 'Перевал',
-    excerpt: 'Перевал из детских воспоминаний.', tag: 'Places / History', cover: { img: IMG('hills-canyon-sm') } },
+    excerpt: 'Перевал из детских воспоминаний.', tag: 'Places / History', cover: { img: PIC('canyon-sm') } },
   { slug: 'naryn-festival', status: 'soon', title: 'Кинофестиваль в Нарыне', type: 'Article', cats: ['culture'], place: 'Нарын',
-    excerpt: 'Дневник автора после выхода фильма.', tag: 'Film / Journal', cover: { img: 'media/stories/naryn/cover.jpg' } },
+    excerpt: 'Дневник автора после выхода фильма.', tag: 'Film / Journal', cover: { img: PIC('bts-bw2-sm') } },
   { slug: 'why-mountains', status: 'soon', title: 'Почему меня тянет к горам', type: 'Article', cats: ['journey'], place: 'Кыргызстан',
-    excerpt: 'Личная история о горах, путешествиях и Кыргызстане.', tag: 'Author', cover: { img: IMG('hills-vertical-sm') } }
+    excerpt: 'Личная история о горах, путешествиях и Кыргызстане.', tag: 'Author', cover: { img: PIC('bek-shore-sm') } }
 ];
 
 /* ---------------------------------------------------------------------
@@ -262,7 +326,7 @@ const TRAVEL = [
     title: 'Аксы', region: 'Джалал-Абадская область',
     excerpt: 'Небольшое путешествие туда, где я вырос.',
     duration: '3 дня · 2 ночи', dates: 'Даты уточняются', price: 'Стоимость уточняется', seats: 'Уточняется',
-    cover: IMG('hills-yurts-2'), gallery: ['hills-valley', 'hills-tree-1', 'hills-fields', 'hills-camp'],
+    cover: PIC('tree-hill'), gallery: ['tree-v', 'fields', 'valley', 'yurts-green'],
     about: 'Небольшое путешествие в Аксы — место, где я вырос. Горы, сёла, люди и истории, которые я знаю с детства.',
     why: 'Почему BEKNAZAURUS выбрал этот маршрут — текст появится позже.',
     route: ['Бишкек', 'Төө-Ашуу', 'Аксы', 'Авлетим'],
@@ -277,13 +341,13 @@ const TRAVEL = [
     title: 'Сон-Куль', region: 'Нарынская область',
     excerpt: 'Высокогорное озеро, юрты и жизнь пастухов летом.',
     duration: '2 дня · 1 ночь', dates: 'Даты уточняются', price: 'Стоимость уточняется',
-    cover: IMG('hills-yurts-1')
+    cover: PIC('yurts-green')
   },
   {
     slug: 'sary-chelek', kind: 'expedition', status: 'dev', demo: true,
     title: 'Экспедиция «Сары-Челек»', region: 'Джалал-Абадская область',
     excerpt: 'Ищем людей, места и истории заповедного края.',
-    duration: '5 дней', cover: IMG('hills-vertical'),
+    duration: '5 дней', cover: PIC('mountain'),
     points: ['Документальные истории', 'Фотоархив', 'Съёмка с дрона', 'Версии на английском']
   },
   { slug: 'past-aksy',  kind: 'past', status: 'done', demo: true, year: '2026', title: 'Аксы' },
@@ -311,6 +375,26 @@ const WORKS = [
     story: 'kaibar'
   },
   {
+    slug: 'qaibar-academy', status: 'published', title: 'QAIBAR ACADEMY', year: '',
+    cat: 'Музыкальные клипы и музыка', cover: PIC('qaibar-academy-poster'), video: VID('qaibar-academy'),
+    excerpt: 'Тизер музыкальной академии Qaibar.', role: 'Съёмка и монтаж.'
+  },
+  {
+    slug: 'at-bashy', status: 'published', title: 'AT-BASHY', year: '',
+    cat: 'Музыкальные клипы и музыка', cover: PIC('at-bashy-poster'), video: VID('at-bashy'),
+    excerpt: 'Музыкальное видео.', story: 'at-bashy'
+  },
+  {
+    slug: 'attila-duet', status: 'published', title: 'ATTILA HAN DUET', year: '',
+    cat: 'Музыкальные клипы и музыка', cover: PIC('attila-poster'), video: VID('attila-duet'), vertical: true,
+    excerpt: 'Музыкальное видео.', story: 'attila-duet'
+  },
+  {
+    slug: 'frunze-ensemble', status: 'published', title: 'MUSIC IN FRUNZE', year: '',
+    cat: 'Музыкальные клипы и музыка', cover: PIC('frunze-poster'), video: VID('frunze'), vertical: true,
+    excerpt: 'Музыкальное видео ансамбля.', story: 'frunze-ensemble'
+  },
+  {
     slug: 'kun-tiybes', status: 'published', title: 'KÜN TIYBES', year: '',
     cat: 'Туризм и места', cover: 'media/works/kun-tiybes.jpg',
     tagline: 'Одна история может помочь месту стать заметнее.',
@@ -321,7 +405,7 @@ const WORKS = [
   },
   {
     slug: 'sezim', status: 'published', title: 'СЕЗИМ', year: '2023',
-    cat: 'Документальное кино', cover: YT('4g1HHazPp00'),
+    cat: 'Документальное кино', cover: 'media/stories/sezim/cover.jpg',
     excerpt: 'Дебютный короткометражный документальный фильм.',
     role: 'Режиссёр, оператор.', story: 'sezim'
   },
@@ -333,7 +417,7 @@ const WORKS = [
   },
   {
     slug: 'nomad-games', status: 'published', title: 'Всемирные игры кочевников', year: '2026',
-    cat: 'Культура', cover: IMG('ng-1-sm'),
+    cat: 'Культура', cover: PIC('ng-fire2-sm'),
     excerpt: 'Фоторепортаж с церемонии и арены.',
     role: 'Фотография.', story: 'nomad-games'
   }
