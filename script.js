@@ -107,7 +107,8 @@ function pageHome() {
   const more = published(STORIES).slice(7, 14);
   return '' +
   '<section class="scr hero-home tone-dark">' +
-    '<video class="bg" autoplay muted loop playsinline preload="auto" poster="' + PIC('hero-poster') + '" src="' + VID('hero') + '" aria-label="Девушка в белом платье с лошадью в горной долине"></video>' +
+    '<video class="bg" autoplay muted loop playsinline preload="auto" poster="' + PIC('hero-poster') + '" aria-label="Девушка в белом платье бежит по зелёному склону">' +
+      '<source src="' + VID('hero-1080') + '" type="video/mp4" media="(max-width: 900px)"><source src="' + VID('hero') + '" type="video/mp4"></video>' +
     '<div class="hero-txt">' +
       '<h1 class="display c-yellow">BEKNAZAURUS</h1>' +
       '<p class="hero-sub">Исследую Кыргызстан через людей,<br>которые его создают.</p>' +
