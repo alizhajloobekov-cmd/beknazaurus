@@ -43,3 +43,45 @@ BEKNAZAURUS — сайт v4 (по ТЗ «Истории», «Путешеств�
 ФОРМЫ
   Сейчас демо: заявки никуда не отправляются. Подключите к почте/CRM
   (например Formspree, Tally или Telegram-бот).
+
+=====================================================================
+БАЗА ДАННЫХ, ВХОД, АДМИН-ПАНЕЛЬ И ОПЛАТА (Supabase + FreedomPay)
+=====================================================================
+Файлы: supabase-config.js, backend.js, admin.js, supabase/schema.sql,
+       supabase/functions/freedompay-init, supabase/functions/freedompay-result
+
+Пока supabase-config.js пустой, сайт работает как обычно (данные из content.js).
+
+1. БАЗА ДАННЫХ
+   1) Зайдите на https://supabase.com → New project (регион — Frankfurt).
+   2) SQL Editor → New query → вставьте весь файл supabase/schema.sql → Run.
+   3) Project Settings → API: скопируйте «Project URL» и ключ «anon public»
+      и впишите их в supabase-config.js (ключ anon публичный, его можно хранить на сайте;
+      ключ service_role НИКОГДА не вставляйте в файлы сайта).
+   4) Authentication → URL Configuration:
+        Site URL:      https://alizhajloobekov-cmd.github.io/beknazaurus/
+        Redirect URLs: https://alizhajloobekov-cmd.github.io/beknazaurus/**
+
+2. АДМИНИСТРАТОР
+   1) Зарегистрируйтесь на сайте: #/register (подтвердите email из письма).
+   2) В Supabase → SQL Editor выполните (со своим email):
+        update public.profiles set role = 'admin' where email = 'ваш@email.com';
+   3) Войдите — в шапке появится «Админ». Админ-панель: #/admin
+      Там: статьи (редактор текста, фото, галерея, YouTube), путешествия, работы,
+      услуги, заказы, сообщения из форм, пользователи и их роли.
+   Обычные пользователи могут только смотреть сайт, регистрироваться и оплачивать.
+
+3. ОПЛАТА (FreedomPay)
+   1) Заключите договор с FreedomPay (freedompay.kg), получите ID магазина и секретный ключ.
+   2) Supabase → Edge Functions → Deploy new function → Via editor:
+        • freedompay-init   — вставьте supabase/functions/freedompay-init/index.ts
+        • freedompay-result — вставьте supabase/functions/freedompay-result/index.ts
+          и ВЫКЛЮЧИТЕ «Enforce JWT verification» (FreedomPay присылает результат без токена).
+   3) Edge Functions → Secrets:
+        FREEDOMPAY_MERCHANT_ID = ID магазина
+        FREEDOMPAY_SECRET_KEY  = секретный ключ
+        FREEDOMPAY_TEST        = 1   (тестовый режим; 0 — реальные платежи)
+        SITE_URL               = https://alizhajloobekov-cmd.github.io/beknazaurus/
+   4) Цены для оплаты задаются в админ-панели: поле «Цена для онлайн-оплаты, сом»
+      у путешествия (кнопка «Забронировать» видна при статусе «Открыт набор») и у услуги.
+      Поддержка проекта — на странице «Партнёрство».

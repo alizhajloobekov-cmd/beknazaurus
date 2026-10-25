@@ -349,10 +349,28 @@ const BLOCKS = {
       '<a class="pill-link" href="#/about/works/' + w.slug + '">Страница проекта →</a></div></section>';
   },
 
+  'html': b => '<section class="b-text b-html"><div class="narrow rich">' + cleanHtml(b.html) + '</div></section>',
+
   'end': b =>
     '<section class="b-end"><p class="display sm">' + esc(b.title) + '</p>' + b.lines.map(l => '<p>' + esc(l) + '</p>').join('') +
       '<a class="pill-link" href="#/stories">← ' + t('ui.back') + '</a></section>'
 };
+// разрешаем только безопасные теги из редактора статей
+function cleanHtml(html) {
+  const tpl = document.createElement('template'); tpl.innerHTML = html || '';
+  const OK = { P: 1, H2: 1, H3: 1, B: 1, STRONG: 1, I: 1, EM: 1, BLOCKQUOTE: 1, UL: 1, OL: 1, LI: 1, A: 1, BR: 1, FIGURE: 1, IMG: 1, FIGCAPTION: 1 };
+  (function walk(n) {
+    Array.from(n.children).forEach(el => {
+      if (/^(SCRIPT|STYLE|IFRAME|OBJECT|EMBED|TEMPLATE|SVG|MATH)$/i.test(el.tagName)) { el.remove(); return; }
+      if (!OK[el.tagName]) { el.replaceWith(...el.childNodes); walk(n); return; }
+      Array.from(el.attributes).forEach(a => { if (!((el.tagName === 'A' && a.name === 'href') || (el.tagName === 'IMG' && (a.name === 'src' || a.name === 'alt')))) el.removeAttribute(a.name); });
+      if (el.tagName === 'A') { if (!/^(https?:|mailto:|#)/.test(el.getAttribute('href') || '')) el.removeAttribute('href'); el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener'); }
+      if (el.tagName === 'IMG') { if (!/^(https?:|media\/)/.test(el.getAttribute('src') || '')) el.remove(); else { el.setAttribute('loading', 'lazy'); el.setAttribute('data-zoom', ''); } }
+      walk(el);
+    });
+  })(tpl.content);
+  return tpl.innerHTML;
+}
 const shared = (a, b) => a.cats.filter(c => b.cats.includes(c)).length;
 
 function pageStory(s) {
@@ -362,6 +380,9 @@ function pageStory(s) {
   if (!s.blocks.some(b => b.t === 'end')) blocks += BLOCKS.end({ title: s.title, lines: [s.type + (s.date ? ' · ' + s.date : '')] });
   return '<article class="story t-' + (s.theme || 'default') + '">' + blocks + '</article>';
 }
+
+const payBtn = (o, label) => '<button type="button" class="pill-link pay" data-checkout="' + esc(JSON.stringify(o)) + '">' + esc(label) + '</button>';
+const fmtKGS = n => Number(n).toLocaleString('ru-RU') + ' сом';
 
 /* ====================================================================
    ПУТЕШЕСТВИЯ
@@ -448,6 +469,8 @@ function pageTrip(x) {
     (x.demo ? '<p class="draft">Это демонстрационная страница: она показывает структуру будущего путешествия. Финальные данные появятся позже.</p>' : '') +
   '</div></section>' +
   (rel.length ? '<section class="b-related"><div class="wrap"><h2 class="display md">Истории из этой поездки</h2><div class="cards cards-3">' + rel.map(s => card(s)).join('') + '</div></div></section>' : '') +
+  (x.priceKGS && x.status === 'open' ? '<section class="t-sec pay-sec"><div class="wrap"><h2 class="display md">Забронировать место</h2><p>Онлайн-оплата участия в путешествии «' + esc(x.title) + '»: ' + fmtKGS(x.priceKGS) + '.</p>' +
+    payBtn({ kind: 'travel', slug: x.slug, title: 'Путешествие «' + x.title + '»', amount: x.priceKGS }, 'Забронировать — ' + fmtKGS(x.priceKGS)) + '</div></section>' : '') +
   '<section class="t-sec form-sec"><div class="wrap two"><div><h2 class="display md">Поехали?</h2><p>Оставьте контакт — напишу, когда откроется набор на «' + esc(x.title) + '».</p></div>' +
     form('trip', [['Имя', 'name', 1], ['Email или WhatsApp', 'contact', 1], ['Сообщение', 'msg', 0, 1]], 'Поехали') + '</div></section>';
 }
@@ -597,6 +620,7 @@ function aboutServices() {
         [['Для кого', s.who], ['Какую задачу решает', s.task], ['Формат сотрудничества', s.format], ['Стоимость', s.price]].filter(r => r[1]).map(r => '<p><b>' + r[0] + ':</b> ' + esc(r[1]) + '</p>').join('') +
         (s.scope.length ? '<ul class="dots">' + s.scope.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '') +
         '<p class="draft">Описание услуги готовится.</p>' +
+        (s.priceKGS ? payBtn({ kind: 'service', slug: s.slug || s.title, title: 'Услуга «' + s.title + '»', amount: s.priceKGS }, 'Оплатить — ' + fmtKGS(s.priceKGS)) + ' ' : '') +
         '<a class="pill-link" href="#/about/services" data-discuss="' + esc(s.title) + '">Обсудить проект →</a>' +
       '</div></details>').join('') + '</div>' +
   '</div></section>' +
@@ -620,6 +644,10 @@ function aboutPartner() {
     [['Поддержка отдельных проектов', 'Финансирование конкретного фильма, истории или экспедиции.'], ['Стратегическое партнёрство', 'Долгосрочная поддержка развития BEKNAZAURUS и его медиаплатформы.'], ['Гранты и культурные инициативы', 'Сотрудничество с фондами и организациями в рамках подходящих программ.']]
       .map(f => '<div><h3>' + f[0] + '</h3><p>' + f[1] + '</p></div>').join('') +
   '</div></div></section>' +
+  '<section class="t-sec pay-sec"><div class="wrap"><p class="label">Поддержать BEKNAZAURUS</p><h2 class="display md">Поддержка проекта</h2>' +
+    '<p>Любая сумма помогает снимать независимые истории о Кыргызстане.</p><div class="donate">' +
+    [500, 1000, 3000, 5000].map(a => payBtn({ kind: 'donation', slug: 'support', title: 'Поддержка проекта BEKNAZAURUS', amount: a }, fmtKGS(a))).join('') +
+    payBtn({ kind: 'donation', slug: 'support', title: 'Поддержка проекта BEKNAZAURUS', amount: '' }, 'Своя сумма') + '</div></div></section>' +
   '<section class="t-sec form-sec"><div class="wrap two"><div><h2 class="display md">Обсудить партнёрство</h2></div>' +
     form('partner', [['Имя', 'name', 1], ['Организация', 'org'], ['Электронная почта', 'email', 1, 0, 'email'],
       ['Интересующее направление', 'dir', 0, 0, 'select', ['Поддержка отдельных проектов', 'Стратегическое партнёрство', 'Гранты и культурные инициативы']], ['Сообщение', 'msg', 1, 1]], 'Обсудить партнёрство') +
@@ -638,7 +666,14 @@ function form(id, fields, btn) {
 }
 document.addEventListener('submit', e => {
   const f = e.target.closest('.demoform'); if (!f) return;
-  e.preventDefault(); $('.note', f).textContent = 'Спасибо! Это демо-форма: подключите её к почте или CRM, чтобы получать заявки.'; f.reset();
+  e.preventDefault();
+  const note = $('.note', f);
+  if (!(window.BK && BK.on)) { note.textContent = 'Спасибо! Форма заработает после подключения базы данных.'; f.reset(); return; }
+  const data = {};
+  $$('input, textarea, select', f).forEach(el => { const l = f.querySelector('label[for="' + el.id + '"]'); data[l ? l.textContent : el.id] = el.value; });
+  note.textContent = 'Отправляем…';
+  BK.sendMessage(f.dataset.form, data).then(() => { note.textContent = 'Спасибо! Сообщение отправлено — мы ответим.'; f.reset(); })
+    .catch(() => { note.textContent = 'Не удалось отправить. Попробуйте ещё раз или напишите в Instagram.'; });
 });
 
 /* ====================================================================
@@ -703,7 +738,7 @@ function setMeta(title, desc) {
   $('meta[name="description"]').setAttribute('content', desc || 'Исследую Кыргызстан через людей, которые его создают.');
 }
 function route() {
-  let h = location.hash.replace(/^#\/?/, '');
+  let h = location.hash.replace(/^#\/?/, '').split('?')[0];
   // старые ссылки (#stories, #story-kaibar)
   if (h.startsWith('story-')) h = 'stories/' + h.slice(6);
   const [sec, sub, item] = h.split('/');
@@ -727,7 +762,9 @@ function route() {
     else if (p === 'partnership') { html = aboutPartner(); title = t('about.partner'); }
     else { html = aboutAuthor(); title = t('about.author'); }
   }
+  else if (window.BKPages && BKPages.has(sec)) { const r = BKPages.render(sec, sub); html = r.html; title = r.title; cls = 'bk-' + sec; nav = ''; }
   else { location.replace('#/'); return; }
+  if (html === '') return;
 
   app.innerHTML = html;
   app.className = 'pg-' + cls;
@@ -741,6 +778,7 @@ function route() {
   watchCards(); observeReveal(); checkBroken(); updateHeader();
   const sn = $('.subnav'), act = sn && $('a.active', sn);
   if (act) sn.scrollLeft = act.offsetLeft - (sn.clientWidth - act.offsetWidth) / 2;
+  if (window.BKPages && BKPages.has(sec)) BKPages.mount(sec, sub, item);
 }
 let lastY = 0;
 function updateHeader() {
@@ -838,3 +876,7 @@ try { saved = localStorage.getItem('bekn_lang') || 'ru'; } catch (e) {}
 lang = UI[saved] ? saved : 'ru';
 setLang(lang);
 if (!app.innerHTML) route();
+if (window.BK && BK.on) {
+  BK.init().then(() => { const y = scrollY; route(); window.scrollTo(0, y); if (window.BKacct) BKacct(); });
+  BK.onChange(() => { const y = scrollY; route(); window.scrollTo(0, y); });
+} else if (window.BKacct) BKacct();
