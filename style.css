@@ -729,3 +729,150 @@ a.tr:hover{background:rgba(255,255,255,.03);}
   .adm-main{padding:16px 16px 80px;}
   .adm-grid{grid-template-columns:1fr;}
 }
+
+/* ====================================================================
+   ВЕРСИЯ 6 — живой коллаж, «Истории» с бухтой, путешествия, подвал,
+   этапы «Об авторе» с каруселями
+   ==================================================================== */
+/* коллажи из видео */
+.fh-mosaic video,.mosaic video{width:100%;height:100%;object-fit:cover;display:block;background:#1a1a1e;}
+.fh-mosaic a,.mosaic a{position:relative;}
+.fh-mosaic a::after,.mosaic a::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);pointer-events:none;}
+
+/* 5. «Истории» — бирюзовая бухта, как в макете «Истории 1» */
+.pg-home .fh-stories::before{background:linear-gradient(180deg,rgba(0,20,30,.55) 0%,rgba(0,20,30,.25) 34%,rgba(0,20,30,.05) 60%,rgba(0,0,0,.25));}
+.fh-tag{font-weight:800;font-size:calc(30*var(--k));line-height:1;color:#fff;margin-top:calc(2*var(--k))!important;text-shadow:0 2px 14px rgba(0,0,0,.35);}
+.fh-upper{font-weight:800;text-transform:uppercase;font-size:calc(19*var(--k));line-height:1.06;color:#fff;max-width:calc(640*var(--k));margin:calc(12*var(--k)) auto 0!important;text-shadow:0 2px 14px rgba(0,0,0,.4);}
+.pg-home .fh-stories .c-yellow,.ph-stories .c-yellow{color:#FFE000;text-shadow:0 3px 24px rgba(0,0,0,.25);}
+.pg-home .fh-stories .fh-top{padding-top:calc(96*var(--k));}
+.fh-feat{top:calc(318*var(--k));width:calc(800*var(--k));height:calc(450*var(--k));border:0;border-radius:calc(26*var(--k));box-shadow:0 30px 70px rgba(0,0,0,.45);}
+.fh-feat::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.65));pointer-events:none;}
+.fh-feat-label{position:absolute;z-index:2;top:calc(18*var(--k));left:calc(18*var(--k));padding:calc(6*var(--k)) calc(14*var(--k));border-radius:30px;background:#FFE000;color:#111;font-weight:800;font-size:calc(13*var(--k));text-transform:uppercase;letter-spacing:.06em;}
+.fh-feat-cap{z-index:2;left:calc(28*var(--k));right:calc(28*var(--k));bottom:calc(24*var(--k));text-align:left;color:#fff;font-size:calc(17*var(--k));display:flex;flex-direction:column;gap:4px;}
+.fh-feat-cap b{font-weight:900;text-transform:uppercase;font-size:calc(40*var(--k));line-height:1;letter-spacing:-.02em;color:#FFE000;}
+
+/* 6. Новые истории — светлый блок */
+.pg-home .fh-cards{background:#F8EEE7;padding:calc(80*var(--k)) 0 calc(90*var(--k));}
+.pg-home .fh-cards .card{color:#17120F;}
+.pg-home .fh-cards .card .cap{text-shadow:none;}
+.pg-home .fh-cards .card .cap p{color:#6B605A;}
+.pg-home .fh-cards .card .cap .meta{color:#079463;}
+.fh-cards-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:0 auto calc(36*var(--k));max-width:calc(1108*var(--k));}
+.fh-cards-head .fh-t47{color:#4A2E2B;}
+
+/* 7. Путешествия — текст слева, карточка справа */
+.pg-home .fh-cta::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(18,10,4,.82) 0%,rgba(18,10,4,.55) 45%,rgba(18,10,4,.1) 80%);}
+.fh-cta .fh-img img{object-position:50% 40%;}
+.fh-cta-in{position:absolute;z-index:2;inset:0;display:grid;grid-template-columns:1fr calc(420*var(--k));align-items:center;gap:calc(80*var(--k));padding:0 calc(150*var(--k)) 0 calc(120*var(--k));}
+.fh-cta-txt{color:#fff;max-width:calc(600*var(--k));}
+.fh-cta-label{font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:calc(14*var(--k));color:#FFE000;margin-bottom:calc(16*var(--k))!important;}
+.pg-home .fh-cta-t{position:static;text-align:left;color:#fff;font-weight:900;text-transform:uppercase;font-size:calc(46*var(--k));line-height:.98;letter-spacing:-.02em;}
+.fh-cta-p{font-size:calc(19*var(--k));line-height:1.45;color:rgba(255,255,255,.88);margin:calc(22*var(--k)) 0 calc(14*var(--k))!important;}
+.fh-cta-routes{font-weight:800;color:#FFE000;font-size:calc(17*var(--k));margin-bottom:calc(26*var(--k))!important;}
+.pg-home .fh-cta-card{position:relative;left:auto;top:auto;width:calc(420*var(--k));height:calc(525*var(--k));border-radius:calc(44*var(--k));box-shadow:0 30px 70px rgba(0,0,0,.5);}
+.pg-home .fh-cta-card .tc-btn{top:auto;bottom:calc(26*var(--k));}
+
+/* мобильная версия новых блоков */
+@media(max-width:900px){
+  .fh-tag{font-size:22px;} .fh-upper{font-size:13px;max-width:none;}
+  .fh-feat{position:relative;left:auto;top:auto;transform:none;margin:26px auto 0;width:calc(100% - 32px);height:auto;aspect-ratio:16/10;border-radius:18px;}
+  .fh-feat-label{font-size:11px;top:12px;left:12px;padding:5px 11px;}
+  .fh-feat-cap{font-size:13px;left:16px;right:16px;bottom:14px;}
+  .fh-feat-cap b{font-size:24px;}
+  .pg-home .fh-cards{padding:56px 0 60px;}
+  .fh-cards-head{margin-bottom:22px;}
+  .fh-cards-head .fh-t47{font-size:30px;}
+  .pg-home .fh-cta{display:block;padding:0;min-height:0;}
+  .fh-cta-in{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:30px;padding:110px 20px 56px;}
+  .fh-cta-txt{max-width:none;}
+  .fh-cta-label{font-size:12px;} .pg-home .fh-cta-t{font-size:30px;} .fh-cta-p{font-size:15px;} .fh-cta-routes{font-size:14px;}
+  .pg-home .fh-cta-card{width:min(78vw,360px);height:auto;aspect-ratio:4/5;margin:0 auto;border-radius:32px;}
+  .pg-home .fh-cta-card .tc-btn{font-size:14px;padding:11px 22px;bottom:18px;}
+  .pg-home .fh-cta::before{background:linear-gradient(180deg,rgba(18,10,4,.8),rgba(18,10,4,.55) 60%,rgba(18,10,4,.35));}
+}
+
+/* истории на телефоне: 3 в ряд, на маленьких экранах — 2 */
+@media(max-width:740px){.cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 10px;}}
+@media(max-width:359px){.cards{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:560px){.cards .card .cap p:not(.meta){display:none;} .card h3{font-size:.88rem;} .card .fmt{font-size:.52rem;padding:3px 6px;}}
+@media(max-width:900px){
+  .pg-home .fh-three{grid-template-columns:repeat(3,minmax(0,1fr));max-width:none;gap:14px 10px;}
+  .pg-home .fh-three .card h3{font-size:13px;} .pg-home .fh-three .card .cap .meta{font-size:10px;}
+}
+
+/* ---------- Об авторе: этапы с каруселями ---------- */
+.about-sub{font-size:clamp(1.1rem,2.2vw,1.7rem)!important;line-height:1.15!important;}
+.lead-q{color:var(--gold);text-transform:uppercase;font-weight:900;letter-spacing:-.02em;line-height:1.05;font-size:clamp(1.6rem,3.4vw,2.6rem);}
+.stage{padding:clamp(60px,8vw,110px) 0;}
+.stage.alt{background:var(--bg2);}
+.stage-grid{display:grid;grid-template-columns:1fr 1.7fr;gap:clamp(24px,5vw,80px);margin-bottom:clamp(30px,4vw,46px);}
+.stage-head{position:sticky;top:110px;align-self:start;}
+.stage-num{display:block;font-weight:900;color:var(--gold);font-size:.95rem;letter-spacing:.12em;margin-bottom:12px;}
+.stage-text p{color:#D6D2CD;font-size:1.06rem;line-height:1.72;}
+@media(max-width:820px){.stage-grid{grid-template-columns:1fr;}.stage-head{position:static;}}
+.final-sec .display{color:var(--yellow);}
+
+/* карусель фото */
+.car{position:relative;}
+.car-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab;padding:4px 0;}
+.car-track::-webkit-scrollbar{display:none;}
+.car-track.dragging{cursor:grabbing;scroll-snap-type:none;}
+.car-item{flex:0 0 calc((100% - 42px) / 4);aspect-ratio:3/4;scroll-snap-align:start;border-radius:var(--r);overflow:hidden;background:var(--surface);margin:0;}
+.car-item img{width:100%;height:100%;object-fit:cover;transition:transform .5s;user-select:none;-webkit-user-drag:none;}
+.car-item:hover img{transform:scale(1.04);}
+.car-btn{position:absolute;top:50%;z-index:3;width:46px;height:46px;border-radius:50%;background:rgba(20,20,24,.75);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:1.6rem;line-height:1;display:flex;align-items:center;justify-content:center;transform:translateY(-50%);backdrop-filter:blur(6px);transition:background .2s;}
+.car-btn:hover{background:var(--pill-gold);color:#111;}
+.car-btn.prev{left:-12px;} .car-btn.next{right:-12px;}
+@media(max-width:900px){.car-item{flex-basis:calc((100% - 28px) / 3);}}
+@media(max-width:600px){.car-item{flex-basis:68%;}.car-btn{display:none;}}
+
+/* ---------- О проекте ---------- */
+.ch-lead{font-weight:800;font-size:clamp(1.2rem,2.2vw,1.9rem)!important;line-height:1.15!important;color:#F0EBE5!important;max-width:900px;margin:12px auto 0!important;}
+.formats.f5{grid-template-columns:repeat(5,1fr);}
+@media(max-width:1100px){.formats.f5{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:700px){.formats.f5{grid-template-columns:1fr 1fr;}}
+@media(max-width:480px){.formats.f5{grid-template-columns:1fr;}}
+.quote-big{font-weight:900;text-transform:uppercase;font-size:clamp(1.5rem,3.4vw,2.8rem);line-height:1.02;letter-spacing:-.02em;text-align:center;max-width:1000px;margin:clamp(50px,7vw,90px) auto 0!important;color:var(--gold)!important;}
+
+/* ---------- Партнёрство: способы поддержки ---------- */
+.ways{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.way{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px 24px;}
+.way h3{font-weight:900;text-transform:uppercase;font-size:1.1rem;letter-spacing:-.01em;margin-bottom:10px;}
+.way p{font-size:.95rem!important;color:var(--muted)!important;line-height:1.6;}
+.way-main{grid-column:1/-1;border-color:var(--gold);background:linear-gradient(120deg,#2a2218,var(--surface));}
+.way-main .donate{justify-content:flex-start;margin-top:12px;}
+@media(max-width:900px){.ways{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.ways{grid-template-columns:1fr;}}
+
+/* ---------- ПОДВАЛ (одинаковый на всех страницах) ---------- */
+#foot{background:#111114;color:#E9E5DF;border-top:1px solid var(--line);}
+body.home-light #foot{background:#F3EBE3;color:#1D1612;border-top:1px solid rgba(29,22,18,.1);}
+#foot::after{display:none;}
+.ft-support{text-align:center;padding:clamp(60px,8vw,96px) var(--gutter) clamp(44px,6vw,64px);max-width:920px;margin:0 auto;}
+.ft-motto{font-weight:900;text-transform:uppercase;font-size:clamp(1.6rem,3.4vw,2.8rem);line-height:1;letter-spacing:-.02em;}
+.ft-sup-text{margin:20px auto 28px;max-width:620px;opacity:.72;line-height:1.6;}
+.ft-sup-btn{font-size:1rem;padding:15px 36px;}
+.ft-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:30px;max-width:1320px;margin:0 auto;padding:44px var(--gutter);border-top:1px solid rgba(127,127,127,.22);}
+.ft-brand{display:flex;flex-direction:column;gap:16px;align-items:flex-start;}
+.ft-brand .logo{font-size:1.4rem;}
+.ft-col{display:flex;flex-direction:column;gap:10px;font-size:.95rem;}
+.ft-col a{opacity:.82;transition:opacity .2s;}
+.ft-col a:hover{opacity:1;text-decoration:underline;}
+.ft-h{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;opacity:.5;font-weight:700;margin-bottom:4px;}
+#foot .socials svg{stroke:currentColor;}
+#foot .socials svg .f{fill:currentColor;}
+.ft-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;max-width:1320px;margin:0 auto;padding:20px var(--gutter) calc(28px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(127,127,127,.22);font-size:.8rem;opacity:.7;}
+.ft-langs button{margin-left:14px;opacity:.55;font-weight:500;}
+.ft-langs button.active{opacity:1;font-weight:800;}
+@media(max-width:820px){.ft-grid{grid-template-columns:1fr 1fr;}.ft-brand{grid-column:1/-1;}}
+/* «Об авторе» — светлый первый экран, как на главной */
+.hero-light{background:#EDEDED!important;}
+.hero-light::before{background:none!important;}
+.hero-light figure.bg img{object-position:50% 50%!important;filter:grayscale(1);}
+.hero-light .scr-txt{padding-top:calc(100*var(--k) + 40px);}
+.hero-light .scr-txt h1{color:#079463;font-size:calc(40*var(--k) + 14px);}
+.hero-light .scr-txt p.c-orange{color:#D9890A;font-weight:800;}
+@media(max-width:900px){.hero-light .scr-txt{padding-top:140px;}.hero-light .scr-txt h1{font-size:32px;}}
+body.light-top #hdr:not(.solid){color:#17120F;background:none;}
+body.light-top #hdr:not(.solid) #mainnav{background:rgba(214,214,214,.72);border-color:transparent;}
+body.light-top #hdr:not(.solid) #mainnav a:not(.active){color:#17120F;}

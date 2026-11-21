@@ -11,19 +11,19 @@ const UI = {
   ru: { 'nav.stories': 'Истории', 'nav.travel': 'Путешествия', 'nav.about': 'О нас', 'ui.search': 'Поиск',
         'snd.lbl': 'Музыка', 'snd.hint': 'Нажмите — включится музыка', 'f.all': 'Все', 'ui.soon': 'Скоро',
         'ui.allstories': 'Все истории', 'ui.back': 'Все истории', 'ui.more': 'Узнать больше', 'ui.open': 'Открыть',
-        'ui.empty': 'В этой теме пока нет историй.', 'ui.noresults': 'Ничего не найдено',
+        'ui.empty': 'В этой теме пока нет историй.', 'ui.noresults': 'Ничего не найдено', 'acct.login': 'Войти', 'acct.account': 'Кабинет', 'acct.admin': 'Админ', 'ui.next': 'Дальше',
         'about.author': 'Об авторе', 'about.project': 'О проекте', 'about.works': 'Работы', 'about.services': 'Услуги', 'about.partner': 'Партнёрство',
         'foot.contacts': 'Контакты', 'foot.write': 'Напишите мне' },
   en: { 'nav.stories': 'Stories', 'nav.travel': 'Journeys', 'nav.about': 'About', 'ui.search': 'Search',
         'snd.lbl': 'Music', 'snd.hint': 'Tap to play music', 'f.all': 'All', 'ui.soon': 'Soon',
         'ui.allstories': 'All stories', 'ui.back': 'All stories', 'ui.more': 'Learn more', 'ui.open': 'Open',
-        'ui.empty': 'No stories in this topic yet.', 'ui.noresults': 'Nothing found',
+        'ui.empty': 'No stories in this topic yet.', 'ui.noresults': 'Nothing found', 'acct.login': 'Sign in', 'acct.account': 'Account', 'acct.admin': 'Admin', 'ui.next': 'Next',
         'about.author': 'Author', 'about.project': 'Project', 'about.works': 'Works', 'about.services': 'Services', 'about.partner': 'Partnership',
         'foot.contacts': 'Contacts', 'foot.write': 'Write to me' },
   ky: { 'nav.stories': 'Окуялар', 'nav.travel': 'Саякаттар', 'nav.about': 'Биз жөнүндө', 'ui.search': 'Издөө',
-        'snd.lbl': 'Музыка', 'snd.hint': 'Басыңыз — музыка угулат', 'f.all': 'Баары', 'ui.soon': 'Жакында',
+        'snd.lbl': 'Музыка', 'snd.hint': 'Музыканы угуу үчүн басыңыз', 'f.all': 'Баары', 'ui.soon': 'Жакында',
         'ui.allstories': 'Бардык окуялар', 'ui.back': 'Бардык окуялар', 'ui.more': 'Кененирээк', 'ui.open': 'Ачуу',
-        'ui.empty': 'Бул темада азырынча окуя жок.', 'ui.noresults': 'Эч нерсе табылган жок',
+        'ui.empty': 'Бул темада азырынча окуя жок.', 'ui.noresults': 'Эч нерсе табылган жок', 'acct.login': 'Кирүү', 'acct.account': 'Кабинет', 'acct.admin': 'Админ', 'ui.next': 'Андан ары',
         'about.author': 'Автор жөнүндө', 'about.project': 'Долбоор жөнүндө', 'about.works': 'Иштер', 'about.services': 'Кызматтар', 'about.partner': 'Өнөктөштүк',
         'foot.contacts': 'Байланыш', 'foot.write': 'Мага жазыңыз' }
 };
@@ -98,46 +98,86 @@ const cardObs = new IntersectionObserver(es => es.forEach(en => {
   else v.pause();
 }), { threshold: .5 });
 const watchCards = () => $$('.card').forEach(c => cardObs.observe(c));
+const vidObs = new IntersectionObserver(es => es.forEach(en => {
+  const v = en.target;
+  if (en.isIntersecting) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause();
+}), { threshold: .2 });
+function prepVideos() {
+  $$('video[data-inview]').forEach(v => vidObs.observe(v));
+  $$('video[data-rate]').forEach(v => { const r = +v.dataset.rate; const set = () => { v.defaultPlaybackRate = r; v.playbackRate = r; }; set(); v.addEventListener('loadedmetadata', set); v.addEventListener('play', set); });
+}
+
+/* ---------- общие блоки: живой коллаж и карусель фото ---------- */
+// коллаж «Мои работы»: каждая плитка — короткое зацикленное видео
+const COLLAGE = [
+  ['m1', '#/stories/nomad-games', 'c-horse', 'Всадница на коне в горной долине'],
+  ['m2', '#/stories/tolkundanyp', 'c-felt', 'Руки создают войлочный узор'],
+  ['m3', '#/stories/kaibar', 'c-qaibar', 'Музыканты Qaibar'],
+  ['m4', '#/stories/avletim', 'c-field', 'Дорога через поля Аксы'],
+  ['m5', '#/stories/light-silence', 'c-mosque', 'Мечеть: свет и арки'],
+  ['m6', '#/stories/frunze-ensemble', 'c-frunze', 'Ансамбль играет вместе']];
+function collageHtml(cls) {
+  return '<div class="' + cls + '">' + COLLAGE.map(c =>
+    '<a class="' + c[0] + '" href="' + c[1] + '"><video muted loop playsinline preload="metadata" data-inview poster="' + PIC(c[2]) + '" src="' + VID(c[2]) + '" aria-label="' + esc(c[3]) + '"></video></a>').join('') + '</div>';
+}
+// карусель: видно 3–4 фото, остальные листаются кнопками, мышью или пальцем
+function carousel(list, alt) {
+  return '<div class="car"><button type="button" class="car-btn prev" aria-label="Назад">‹</button><div class="car-track">' +
+    list.map(n => '<figure class="car-item">' + imgTag(n.indexOf('/') > -1 ? n : PIC(IMGDIMS[n] ? n + '-sm' : n), { zoom: true, alt: alt || '', sizes: '(max-width:600px) 70vw, (max-width:900px) 33vw, 25vw' }) + '</figure>').join('') +
+    '</div><button type="button" class="car-btn next" aria-label="Вперёд">›</button></div>';
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('.car-btn'); if (!b) return;
+  const tr = b.parentNode.querySelector('.car-track');
+  tr.scrollBy({ left: (b.classList.contains('next') ? 1 : -1) * tr.clientWidth * 0.8, behavior: 'smooth' });
+});
+// перетаскивание мышью
+let drag = null;
+document.addEventListener('pointerdown', e => {
+  const tr = e.target.closest('.car-track'); if (!tr || e.pointerType !== 'mouse') return;
+  drag = { tr, x: e.clientX, left: tr.scrollLeft, moved: false }; tr.classList.add('dragging');
+});
+document.addEventListener('pointermove', e => {
+  if (!drag) return; const dx = e.clientX - drag.x;
+  if (Math.abs(dx) > 4) drag.moved = true;
+  drag.tr.scrollLeft = drag.left - dx;
+});
+document.addEventListener('pointerup', () => { if (!drag) return; drag.tr.classList.remove('dragging'); const m = drag.moved; setTimeout(() => { drag = null; }, 0); if (m) window.__carDragged = Date.now(); });
+document.addEventListener('click', e => { if (window.__carDragged && Date.now() - window.__carDragged < 80 && e.target.closest('.car-track')) { e.stopPropagation(); e.preventDefault(); } }, true);
 
 /* ====================================================================
    ГЛАВНАЯ
    ==================================================================== */
 function pageHome() {
-  const fresh = published(STORIES).filter(s => s.slug !== 'sezim').slice(0, 3);
-  const feat = story('sezim');
+  const H = L('home');
+  const fresh = ['sezim', 'kaibar', 'nomad-games'].map(story).filter(x => x && x.status === 'published');
+  const feat = story('avletim');
   return '' +
-  /* 1. Первый экран — видео */
+  /* 1. Первый экран — видео (замедленное) */
   '<section class="fh fh-hero">' +
-    '<video class="fh-bg" autoplay muted loop playsinline preload="auto" poster="' + PIC('hero-poster') + '" aria-label="Девушка в белом платье бежит по зелёному склону">' +
+    '<video class="fh-bg" autoplay muted loop playsinline preload="auto" data-rate="0.7" poster="' + PIC('hero-poster') + '" aria-label="Девушка в белом платье бежит по зелёному склону">' +
       '<source src="' + VID('hero-1080') + '" type="video/mp4" media="(max-width: 900px)"><source src="' + VID('hero') + '" type="video/mp4"></video>' +
     '<div class="fh-hero-txt">' +
       '<h1 class="fh-t78">BEKNAZAURUS</h1>' +
-      '<p class="fh-sub35">Исследую Кыргызстан через людей,<br>которые его создают.</p>' +
+      '<p class="fh-sub35">' + H.heroSub + '</p>' +
     '</div>' +
   '</section>' +
 
-  /* 2. Коллаж — о проекте */
+  /* 2. Коллаж — мои работы (видео) */
   '<section class="fh fh-collage">' +
     '<div class="fh-top">' +
       '<h2 class="fh-t47 c-gold">BEKNAZAURUS</h2>' +
-      '<p class="fh-p22 fh-col-p">Я хочу, чтобы однажды человек на другом конце мира услышал:<br>где-то в Центральной Азии есть Кыргызстан.<br>Страна с удивительными местами, богатой историей, живой культурой и людьми,<br>которые каждый день что-то создают.</p>' +
+      '<p class="fh-p22 fh-col-p">' + H.collage + '</p>' +
     '</div>' +
-    '<div class="fh-mosaic">' +
-      '<a class="m1" href="#/stories/nomad-games">' + fig(PIC('ng-horses-sm'), { alt: 'Всадники на Играх кочевников', sizes: '18vw' }) + '</a>' +
-      '<a class="m2" href="#/stories/tolkundanyp">' + fig(PIC('felt-art-sm'), { alt: 'Войлочное панно', sizes: '18vw' }) + '</a>' +
-      '<a class="m3" href="#/stories/kaibar">' + fig(PIC('poster-kaibar'), { alt: 'Музыканты Qaibar' }) + '</a>' +
-      '<a class="m4" href="#/stories/hills">' + fig(PIC('valley-sm'), { alt: 'Горная долина', sizes: '30vw' }) + '</a>' +
-      '<a class="m5" href="#/stories/light-silence">' + fig(PIC('poster-mosque'), { alt: 'Мечеть' }) + '</a>' +
-      '<a class="m6" href="#/stories/tolkundanyp">' + fig(PIC('felt-circle-sm'), { alt: 'Войлочный ковёр', sizes: '20vw' }) + '</a>' +
-    '</div>' +
+    collageHtml('fh-mosaic') +
   '</section>' +
 
   /* 3. Об авторе */
   '<section class="fh fh-author">' +
     fig(PIC('author-lake'), { cls: 'fh-img', alt: 'Бекназар у озера', sizes: '100vw' }) +
     '<a class="fh-top" href="#/about/author">' +
-      '<h2 class="fh-t40 c-green">Меня зовут Бекназар Сейит</h2>' +
-      '<p class="fh-p22 fh-bold c-orange">Я снимаю кино, фотографии и истории о Кыргызстане.<br>Я хочу показать её такой,<br>какой вижу сам.</p>' +
+      '<h2 class="fh-t40 c-green">' + H.meTitle + '</h2>' +
+      '<p class="fh-p22 fh-bold c-orange">' + H.meText + '</p>' +
     '</a>' +
   '</section>' +
 
@@ -146,42 +186,52 @@ function pageHome() {
     fig(PIC('beach'), { cls: 'fh-img', alt: 'Мама и ребёнок на берегу на закате', sizes: '100vw' }) +
     '<div class="fh-top">' +
       '<h2 class="fh-t63 c-brown">BEKNAZAURUS</h2>' +
-      '<p class="fh-sub34 c-green">Авторское документальное медиа</p>' +
-      '<p class="fh-p22 fh-media-p">Я чувствую, что родился именно для этого — рассказывать миру о своей стране.<br>Делать заметнее её людей.<br>Популяризировать её культуру и историю.</p>' +
+      '<p class="fh-sub34 c-green">' + H.mediaSub + '</p>' +
+      '<p class="fh-p22 fh-media-p">' + H.mediaText + '</p>' +
     '</div>' +
-    '<p class="fh-foot">BEKNAZAURUS — мой способ рассказывать об этом.</p>' +
+    '<p class="fh-foot">' + H.mediaFoot + '</p>' +
   '</section>' +
 
-  /* 5. Истории — большая карточка */
+  /* 5. Истории — бирюзовая бухта и ролик «Авлетим» */
   '<section class="fh fh-stories">' +
-    fig(PIC('coast'), { cls: 'fh-img', alt: '', sizes: '100vw' }) +
+    fig(PIC('bay2-md'), { cls: 'fh-img', alt: 'Бирюзовая бухта Иссык-Куля сверху', sizes: '100vw' }) +
     '<div class="fh-top">' +
-      '<h2 class="fh-t47 c-rust">Истории</h2>' +
-      '<p class="fh-p22 fh-light">Ищу. Создаю. Рассказываю.<br>Так, как вижу.<br>Так, как чувствую.</p>' +
+      '<h2 class="fh-t63 c-yellow">' + H.storiesTitle + '</h2>' +
+      '<p class="fh-tag">' + H.storiesTag + '</p>' +
+      '<p class="fh-upper">' + H.storiesText + '</p>' +
     '</div>' +
     (feat ? '<a class="fh-feat" href="#/stories/' + feat.slug + '">' +
-      '<video autoplay muted loop playsinline preload="metadata" poster="media/stories/sezim/frame-01.jpg" src="' + VID('sezim-trailer') + '"></video>' +
-      '<span class="fh-feat-cap"><b>' + esc(feat.title) + '</b> · ' + esc(feat.excerpt) + '</span></a>' : '') +
+      '<video muted loop playsinline preload="metadata" data-inview poster="' + PIC('avletim-feature') + '" src="' + VID('avletim-feature') + '"></video>' +
+      '<span class="fh-feat-label">' + H.featLabel + '</span>' +
+      '<span class="fh-feat-cap"><b>' + esc(feat.title) + '</b>' + esc(feat.excerpt) + '</span></a>' : '') +
   '</section>' +
 
-  /* 6. Ряд карточек */
+  /* 6. Новые истории */
   '<section class="fh-cards">' +
-    fig(PIC('water-md'), { cls: 'fh-img', alt: '', sizes: '100vw' }) +
     '<div class="wrap">' +
+      '<div class="fh-cards-head"><h2 class="fh-t47">' + H.newStories + '</h2><a class="pill-link" href="#/stories">' + t('ui.allstories') + ' →</a></div>' +
       '<div class="cards fh-three">' + fresh.map(s => card(s)).join('') + '</div>' +
-      '<p class="fh-all"><a class="pill-link" href="#/stories">' + t('ui.allstories') + ' →</a></p>' +
     '</div>' +
   '</section>' +
 
   travelCta();
 }
 
+/* 7. Путешествия */
 function travelCta() {
+  const H = L('home');
   return '<section class="fh fh-cta">' + fig(PIC('sunset-v'), { cls: 'fh-img', alt: '', sizes: '100vw' }) +
-    '<h2 class="fh-cta-t">А если однажды захотите увидеть<br>всё это сами —<br>поехали.</h2>' +
-    '<a class="fh-cta-card" href="#/travel">' + fig(PIC('water-sm'), { alt: 'Человек входит в озеро на закате', sizes: '34vw' }) +
-      '<span class="tc-btn">Путешествия →</span></a>' +
-    '<p class="fh-cta-cap">Путешествия с BEKNAZAURUS</p>' +
+    '<div class="fh-cta-in">' +
+      '<div class="fh-cta-txt">' +
+        '<p class="fh-cta-label">' + H.travelLabel + '</p>' +
+        '<h2 class="fh-cta-t">' + H.travelTitle + '</h2>' +
+        '<p class="fh-cta-p">' + H.travelText + '</p>' +
+        '<p class="fh-cta-routes">' + H.travelRoutes + '</p>' +
+        '<a class="pill-link pay" href="#/travel">' + H.travelBtn + ' →</a>' +
+      '</div>' +
+      '<a class="fh-cta-card" href="#/travel">' + fig(PIC('water-sm'), { alt: 'Человек входит в озеро на закате', sizes: '34vw' }) +
+        '<span class="tc-btn">' + t('nav.travel') + ' →</span></a>' +
+    '</div>' +
   '</section>';
 }
 
@@ -190,13 +240,14 @@ function travelCta() {
    ==================================================================== */
 let filter = 'all';
 function pageStories() {
+  const H = L('home');
   return '' +
-  '<section class="page-hero ph-stories tone-dark">' +
-    fig(PIC('lake-dusk'), { cls: 'bg', eager: true, alt: 'Озеро в сумерках' }) +
+  '<section class="page-hero ph-stories">' +
+    fig(PIC('bay2'), { cls: 'bg', eager: true, alt: 'Бирюзовая бухта Иссык-Куля сверху' }) +
     '<div class="ph-txt">' +
-      '<h1 class="display c-rust">Истории</h1>' +
-      '<p class="tagline">Ищу. Создаю. Рассказываю.<br>Так, как вижу.<br>Так, как чувствую.</p>' +
-      '<p class="ph-desc">Кыргызстан — это тысячи историй. Мы ищем их в людях, местах, культуре и повседневной жизни. Каждая история здесь создана с временем, вниманием и любовью.</p>' +
+      '<h1 class="display c-yellow">' + H.storiesTitle + '</h1>' +
+      '<p class="fh-tag">' + H.storiesTag + '</p>' +
+      '<p class="fh-upper">' + H.storiesText + '</p>' +
     '</div>' +
   '</section>' +
   '<section class="catalog">' +
@@ -204,6 +255,7 @@ function pageStories() {
     '<div class="wrap"><div class="cards" id="grid"></div></div>' +
   '</section>';
 }
+
 function chips() {
   return [['all', t('f.all')]].concat(CATEGORIES.map(c => [c[0], catName(c[0])]))
     .map(f => '<button class="chip' + (f[0] === filter ? ' active' : '') + '" role="tab" aria-selected="' + (f[0] === filter) + '" data-f="' + f[0] + '">' + esc(f[1]) + '</button>').join('');
@@ -481,7 +533,7 @@ function pageTrip(x) {
 const ABOUT_TABS = [['author', 'about.author'], ['project', 'about.project'], ['works', 'about.works'], ['services', 'about.services'], ['partnership', 'about.partner']];
 const aboutNav = cur => '<nav class="subnav" aria-label="О нас">' + ABOUT_TABS.map((a, i) =>
   '<a href="#/about/' + a[0] + '"' + (a[0] === cur ? ' class="active" aria-current="page"' : '') + '><span>0' + (i + 1) + '</span>' + t(a[1]) + '</a>').join('') + '</nav>';
-const nextAbout = (href, label) => '<section class="next-sec"><a href="' + href + '"><span class="label">Дальше</span><span class="display md">' + label + ' →</span></a></section>';
+const nextAbout = (href, label) => '<section class="next-sec"><a href="' + href + '"><span class="label">' + t('ui.next') + '</span><span class="display md">' + label + ' →</span></a></section>';
 
 function workCard(w) {
   return '<a class="wcard" href="#/about/works/' + w.slug + '">' + fig(w.cover, { alt: w.title, label: w.title }) +
@@ -489,86 +541,50 @@ function workCard(w) {
 }
 
 function aboutAuthor() {
-  const featured = published(WORKS).slice(0, 3);
+  const A = L('author');
   return '' +
-  '<section class="scr scr-top bw about-hero">' + fig(PIC('author-lake'), { cls: 'bg', eager: true, alt: 'Бекназар Сейит' }) +
-    '<div class="scr-txt"><h1 class="display c-green">Меня зовут Бекназар Сейит</h1>' +
-    '<p class="c-orange strong">Я режиссёр, продюсер и оператор.</p></div></section>' +
+  '<section class="scr scr-top bw about-hero hero-light">' + fig(PIC('author-lake'), { cls: 'bg', eager: true, alt: 'Бекназар Сейит', sizes: '100vw' }) +
+    '<div class="scr-txt"><h1 class="display c-green">' + A.heroTitle + '</h1>' +
+    '<p class="c-orange strong about-sub">' + A.heroSub + '</p></div></section>' +
   aboutNav('author') +
   '<section class="a-sec"><div class="narrow">' +
-    '<p class="lead rv">Создаю документальные истории, снимаю кино, фотографирую и исследую Кыргызстан через людей, места, культуру и идеи.</p>' +
-    '<p class="rv">Я верю, что за каждым местом, проектом и идеей стоят люди. И мне интересно находить их истории и рассказывать о них так, как я сам вижу и чувствую.</p>' +
-    '<p class="rv">Для меня важно не только показывать красоту своей страны, но и делать заметнее людей, которые её создают.</p>' +
-    '<p class="big rv">BEKNAZAURUS — мой способ рассказывать миру о Кыргызстане.</p>' +
+    '<p class="big lead-q rv">' + A.lead + '</p>' +
+    A.intro.map(p => '<p class="rv">' + p + '</p>').join('') +
   '</div></section>' +
-  '<section class="a-sec alt"><div class="wrap two">' +
-    '<div><p class="label">Личная история</p><h2 class="display md">Я родился здесь</h2></div>' +
-    '<div><p>Я вырос среди этих гор. Я видел эту страну не только как турист, но как человек, который здесь живёт.</p>' +
-    '<p>И однажды понял: я не хочу просто путешествовать по Кыргызстану. Я хочу посвятить жизнь тому, чтобы раскрывать его миру — через настоящие человеческие истории.</p>' +
-    '<p class="draft">Текст предварительный. Позже он будет дополнен личной историей и этапами пути.</p></div>' +
-  '</div><div class="wrap"><div class="photo-strip">' + ['director', 'bek-glasses', 'bek-hoodie', 'bek-smile'].map(n => fig(PIC(n + '-sm'), { zoom: true, alt: 'Бекназар Сейит' })).join('') + '</div></div></section>' +
-  '<section class="a-sec"><div class="wrap two">' +
-    '<div><p class="label">Путь</p><h2 class="display md">Ключевые этапы</h2></div>' +
-    '<ol class="timeline">' +
-      '<li><b>2023</b><span>«Сезим» — дебютный документальный фильм.</span></li>' +
-      '<li><b>—</b><span>QAIBAR — съёмка, визуальная концепция и продвижение музыкального проекта.</span></li>' +
-      '<li><b>—</b><span>KÜN TIYBES — история бабушки Абидахан для туристического проекта.</span></li>' +
-      '<li><b>—</b><span>«My Hero» — оператор-постановщик короткометражного фильма.</span></li>' +
-      '<li><b>2026</b><span>Всемирные игры кочевников — фоторепортаж.</span></li>' +
-    '</ol>' +
-  '</div><div class="wrap"><p class="label" style="margin-top:56px">За кадром</p><div class="photo-strip">' + ['bts-camera', 'bts-crew', 'bts-field', 'bts-bw'].map(n => fig(PIC(n + '-sm'), { zoom: true, alt: 'Съёмочный процесс' })).join('') + '</div></div></section>' +
-  '<section class="a-sec dark"><div class="wrap two">' +
-    '<div><p class="label">Философия</p><p class="display md">Жаратыш үчүн жаралгам.</p><p class="big muted">Я рождён, чтобы созидать.</p></div>' +
-    '<div><p>Созидать — значит оставлять после себя что-то ценное: истории, фильмы, фотографии, вдохновение, память, людей.</p>' +
-    '<ul class="vals"><li>Люди важнее достопримечательностей</li><li>История важнее красивой картинки</li><li>Честность важнее вирусности</li><li>Качество важнее количества</li><li>Уважение важнее сенсации</li></ul></div>' +
+  A.stages.map((s, i) =>
+    '<section class="stage' + (i % 2 ? ' alt' : '') + '"><div class="wrap stage-grid">' +
+      '<div class="stage-head"><span class="stage-num">0' + (i + 1) + '</span><h2 class="display md">' + s.title + '</h2></div>' +
+      '<div class="stage-text">' + s.paras.map(p => '<p>' + p + '</p>').join('') + '</div>' +
+    '</div><div class="wrap">' + carousel(AUTHOR_PHOTOS[i] || [], s.title) + '</div></section>').join('') +
+  '<section class="a-sec dark final-sec"><div class="narrow" style="text-align:center">' +
+    '<p class="display md">' + A.final + '</p><p class="big muted">' + A.finalSub + '</p>' +
+    '<div class="acc-actions" style="justify-content:center"><a class="pill-link" href="#/about/services">' + A.btnCollab + ' →</a><a class="pill-link ghost" href="#/about/partnership">' + A.btnStory + '</a></div>' +
   '</div></section>' +
-  '<section class="a-sec"><div class="wrap"><div class="row-head"><h2 class="display md">Избранные работы</h2><a class="pill-link" href="#/about/works">Все работы →</a></div>' +
-    '<div class="wgrid">' + featured.map(workCard).join('') + '</div></div></section>' +
   nextAbout('#/about/project', t('about.project'));
 }
 
 function aboutProject() {
+  const P = L('project');
+  const paras = a => a.map(p => '<p class="rv">' + p + '</p>').join('');
   return '' +
   '<section class="collage-hero">' +
-    '<div class="ch-txt"><h1 class="display c-gold">BEKNAZAURUS</h1>' +
-    '<p>Я хочу, чтобы однажды человек на другом конце мира услышал:<br>где-то в Центральной Азии есть Кыргызстан.<br>Страна с удивительными местами, богатой историей, живой культурой и людьми,<br>которые каждый день что-то создают.</p></div>' +
-    '<div class="mosaic">' +
-      '<a class="m1" href="#/stories/nomad-games">' + fig(PIC('ng-horses-sm'), { alt: 'Всадники на Играх кочевников' }) + '</a>' +
-      '<a class="m2" href="#/stories/tolkundanyp">' + fig(PIC('felt-art-sm'), { alt: 'Войлочное панно' }) + '</a>' +
-      '<a class="m3" href="#/stories/kaibar">' + fig(PIC('poster-kaibar'), { alt: 'Музыканты Qaibar' }) + '</a>' +
-      '<a class="m4" href="#/stories/hills">' + fig(PIC('valley-sm'), { alt: 'Горная долина' }) + '</a>' +
-      '<a class="m5" href="#/stories/light-silence">' + fig(PIC('poster-mosque'), { alt: 'Мечеть' }) + '</a>' +
-      '<a class="m6" href="#/stories/tolkundanyp">' + fig(PIC('felt-circle-sm'), { alt: 'Войлочный ковёр' }) + '</a>' +
-    '</div>' +
+    '<div class="ch-txt"><h1 class="display c-gold">BEKNAZAURUS</h1><p class="ch-lead">' + P.lead + '</p></div>' +
+    collageHtml('mosaic') +
   '</section>' +
   aboutNav('project') +
-  '<section class="a-sec"><div class="narrow">' +
-    '<p class="label">Миссия</p>' +
-    '<p class="big rv">Где-то в Центральной Азии есть Кыргызстан. И я хочу, чтобы о нём узнал мир.</p>' +
-    '<p class="rv">BEKNAZAURUS — авторский документальный медиапроект Бекназара Сейита, посвящённый Кыргызстану, его людям, местам, культуре и истории.</p>' +
-    '<p class="rv">Через кино, фотографии, статьи, визуальные истории и путешествия я исследую свою страну и рассказываю о том, что нахожу.</p>' +
-    '<p class="rv">Мне хочется, чтобы Кыргызстан узнавали не только по его горам и природным красотам, но и по людям, которые живут здесь, создают проекты, сохраняют культуру и формируют будущее страны.</p>' +
+  '<section class="a-sec"><div class="narrow">' + paras(P.intro) + '</div></section>' +
+  '<section class="a-sec alt"><div class="wrap two"><h2 class="display md">' + P.whyTitle + '</h2><div>' + paras(P.why) + '</div></div></section>' +
+  '<section class="a-sec"><div class="wrap">' +
+    '<div class="sec-head"><h2 class="display md">' + P.doTitle + '</h2><p>' + P.doLead + '</p></div>' +
+    '<div class="formats f5">' + P.formats.map((f, i) => '<div><span class="stage-num">0' + (i + 1) + '</span><h3>' + f[0] + '</h3><p>' + f[1] + '</p></div>').join('') + '</div>' +
   '</div></section>' +
-  '<section class="a-sec alt"><div class="wrap">' +
-    '<div class="sec-head"><p class="label">Темы и форматы</p><h2 class="display md">Что мы создаём</h2></div>' +
-    '<div class="formats">' +
-      [['Люди', 'Те, кто каждый день создаёт Кыргызстан своим трудом.'], ['Места', 'Природа, свет и тишина. Места, которым люди придают смысл.'], ['Культура', 'Музыка, ремёсла, традиции и их современный язык.'], ['История', 'То, что важно сохранить для следующих поколений.']]
-        .map(f => '<div><h3>' + f[0] + '</h3><p>' + f[1] + '</p></div>').join('') +
-    '</div>' +
-    '<p class="fmt-line">Кино · Фотография · Статьи · Визуальные истории · Путешествия</p>' +
-  '</div></section>' +
-  '<section class="a-sec lang-sec"><div class="wrap two">' +
-    '<p class="display md">Кыргызский — для своей страны.<br><span class="c-green">English — для мира.</span></p>' +
-    '<div><p>Я создаю BEKNAZAURUS, чтобы делать эти истории заметнее внутри Кыргызстана и знакомить с ними международную аудиторию.</p>' +
-    '<p><b>Будущее.</b> Моя цель — постепенно создать собственную медиаплатформу, которая будет сохранять истории Кыргызстана и открывать их новым поколениям и людям по всему миру.</p></div>' +
-  '</div></section>' +
-  '<section class="a-sec"><div class="wrap"><div class="row-head"><h2 class="display md">Избранные истории</h2><a class="pill-link" href="#/stories">' + t('ui.allstories') + ' →</a></div>' +
-    '<div class="cards cards-3">' + ['sezim', 'bek-adventures', 'kaibar'].map(story).map(s => card(s)).join('') + '</div></div></section>' +
-  '<section class="a-sec alt"><div class="wrap jumps">' +
-    '<a href="#/about/works"><span class="label">03</span><span class="display sm">Работы →</span></a>' +
-    '<a href="#/travel"><span class="label">' + t('nav.travel') + '</span><span class="display sm">Путешествия →</span></a>' +
-    '<a href="#/about/partnership"><span class="label">05</span><span class="display sm">Партнёрство →</span></a>' +
-  '</div></section>';
+  '<section class="a-sec alt"><div class="wrap two"><h2 class="display md">' + P.viewTitle + '</h2><div>' + paras(P.view) + '</div></div>' +
+    '<div class="wrap"><p class="quote-big rv">' + P.viewQuote + '</p></div></section>' +
+  '<section class="a-sec"><div class="wrap two"><h2 class="display md">' + P.futureTitle + '</h2><div>' + paras(P.future) + '</div></div></section>' +
+  '<section class="a-sec dark lang-sec"><div class="wrap two"><p class="display md">' + P.langTitle + '</p><div>' + paras(P.lang) + '</div></div></section>' +
+  '<section class="a-sec"><div class="wrap"><div class="row-head"><h2 class="display md">' + L('home').newStories + '</h2><a class="pill-link" href="#/stories">' + t('ui.allstories') + ' →</a></div>' +
+    '<div class="cards cards-3">' + ['sezim', 'avletim', 'kaibar'].map(story).filter(Boolean).map(s => card(s)).join('') + '</div></div></section>' +
+  '<section class="next-sec"><a href="#/about/partnership"><span class="label">05</span><span class="display md">' + P.supportBtn + ' →</span></a></section>';
 }
 
 let workFilter = 'all';
@@ -630,27 +646,25 @@ function aboutServices() {
 }
 
 function aboutPartner() {
-  return '' +
-  '<section class="scr scr-top warm beach about-hero">' + fig(PIC('beach'), { cls: 'bg', eager: true, alt: '' }) +
-    '<div class="scr-txt"><h1 class="display c-brown">Партнёрство</h1><p class="sub-green">Давайте вместе рассказывать миру о Кыргызстане.</p></div></section>' +
-  aboutNav('partnership') +
-  '<section class="a-sec"><div class="narrow">' +
-    '<p class="rv">Я хочу создавать документальные истории, отправляться в экспедиции и знакомить местную и международную аудиторию с людьми, местами, культурой и историей Кыргызстана.</p>' +
-    '<p class="rv">Для развития BEKNAZAURUS необходимы время, команда, оборудование, поездки и ресурсы для производства независимого контента.</p>' +
-    '<p class="rv">Я открыт к сотрудничеству с организациями, брендами, культурными фондами и партнёрами, которым близка эта идея. Вместе мы можем поддерживать создание документальных фильмов, исследовательских поездок и историй, которые помогают узнавать Кыргызстан глубже.</p>' +
-    '<p class="big rv">Если вам близка эта миссия, давайте обсудим, что мы можем создать вместе.</p>' +
-  '</div></section>' +
-  '<section class="a-sec alt"><div class="wrap"><div class="formats f3">' +
-    [['Поддержка отдельных проектов', 'Финансирование конкретного фильма, истории или экспедиции.'], ['Стратегическое партнёрство', 'Долгосрочная поддержка развития BEKNAZAURUS и его медиаплатформы.'], ['Гранты и культурные инициативы', 'Сотрудничество с фондами и организациями в рамках подходящих программ.']]
-      .map(f => '<div><h3>' + f[0] + '</h3><p>' + f[1] + '</p></div>').join('') +
-  '</div></div></section>' +
-  '<section class="t-sec pay-sec"><div class="wrap"><p class="label">Поддержать BEKNAZAURUS</p><h2 class="display md">Поддержка проекта</h2>' +
-    '<p>Любая сумма помогает снимать независимые истории о Кыргызстане.</p><div class="donate">' +
+  const S = L('support');
+  const donate = '<div class="donate">' +
     [500, 1000, 3000, 5000].map(a => payBtn({ kind: 'donation', slug: 'support', title: 'Поддержка проекта BEKNAZAURUS', amount: a }, fmtKGS(a))).join('') +
-    payBtn({ kind: 'donation', slug: 'support', title: 'Поддержка проекта BEKNAZAURUS', amount: '' }, 'Своя сумма') + '</div></div></section>' +
-  '<section class="t-sec form-sec"><div class="wrap two"><div><h2 class="display md">Обсудить партнёрство</h2></div>' +
-    form('partner', [['Имя', 'name', 1], ['Организация', 'org'], ['Электронная почта', 'email', 1, 0, 'email'],
-      ['Интересующее направление', 'dir', 0, 0, 'select', ['Поддержка отдельных проектов', 'Стратегическое партнёрство', 'Гранты и культурные инициативы']], ['Сообщение', 'msg', 1, 1]], 'Обсудить партнёрство') +
+    payBtn({ kind: 'donation', slug: 'support', title: 'Поддержка проекта BEKNAZAURUS', amount: '' }, S.own) + '</div>';
+  return '' +
+  '<section class="scr scr-top warm beach about-hero">' + fig(PIC('beach'), { cls: 'bg', eager: true, alt: '', sizes: '100vw' }) +
+    '<div class="scr-txt"><h1 class="display c-brown">' + S.title + '</h1><p class="sub-green">' + S.outroBig + '</p></div></section>' +
+  aboutNav('partnership') +
+  '<section class="a-sec"><div class="narrow">' + S.intro.map(p => '<p class="rv">' + p + '</p>').join('') + '</div></section>' +
+  '<section class="a-sec alt" id="support"><div class="wrap">' +
+    '<div class="sec-head"><h2 class="display md">' + S.waysTitle + '</h2></div>' +
+    '<div class="ways">' + S.ways.map((w, i) => '<div class="way' + (i === 0 ? ' way-main' : '') + '"><span class="stage-num">0' + (i + 1) + '</span><h3>' + w[0] + '</h3><p>' + w[1] + '</p>' +
+      (i === 0 ? '<p class="label" style="margin-top:18px">' + S.donateText + '</p>' + donate : '') + '</div>').join('') + '</div>' +
+  '</div></section>' +
+  '<section class="a-sec"><div class="narrow" style="text-align:center">' + S.outro.map(p => '<p>' + p + '</p>').join('') +
+    '<p class="display md" style="margin-top:34px">' + S.outroBig + '</p></div></section>' +
+  '<section class="t-sec form-sec"><div class="wrap two"><div><h2 class="display md">' + S.formTitle + '</h2></div>' +
+    form('partner', [['Имя', 'name', 1], ['Организация', 'org'], ['Электронная почта или WhatsApp', 'email', 1],
+      ['Чем хотите помочь', 'dir', 0, 0, 'select', S.ways.map(w => w[0])], ['Сообщение', 'msg', 1, 1]], S.formTitle) +
   '</div></section>';
 }
 
@@ -687,22 +701,28 @@ const ICONS = {
   email: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>'
 };
 function renderFooter() {
-  const c = SITE.contacts;
+  const c = SITE.contacts, F = L('foot');
   const socials = Object.keys(ICONS).filter(k => c[k]).map(k =>
     '<a href="' + esc(k === 'email' ? 'mailto:' + c[k] : c[k]) + '" target="_blank" rel="noopener" aria-label="' + k + '">' + ICONS[k] + '</a>').join('');
   $('#foot').innerHTML =
-    '<div class="foot-cta"><p class="display sm">Не рассказывать о Кыргызстане.<br>Помогать увидеть его.</p>' +
-      '<a class="pill-link" href="#/about/services">' + t('foot.write') + ' →</a></div>' +
-    '<div class="foot-main">' +
-      '<div class="foot-brand"><div class="socials">' + socials + '</div><p>BEKNAZAURUS ' + SITE.year + '</p>' +
-        (c.email ? '<p><a href="mailto:' + esc(c.email) + '">' + esc(c.email) + '</a></p>' : '') + '</div>' +
-      '<nav class="foot-cols" aria-label="Карта сайта">' +
-        '<div><a href="#/">Главная</a><a href="#/stories">' + t('nav.stories') + '</a><a href="#/travel">' + t('nav.travel') + '</a></div>' +
-        '<div><a href="#/about/author">' + t('about.author') + '</a><a href="#/about/project">' + t('about.project') + '</a><a href="#/about/works">' + t('about.works') + '</a></div>' +
-        '<div><a href="#/about/services">' + t('about.services') + '</a><a href="#/about/partnership">' + t('about.partner') + '</a>' +
-          '<a href="' + esc(c.instagram) + '" target="_blank" rel="noopener">Instagram</a></div>' +
-      '</nav>' +
-    '</div>';
+    '<div class="ft-support">' +
+      '<p class="ft-motto">' + F.motto + '</p>' +
+      '<p class="ft-sup-text">' + F.supText + '</p>' +
+      '<a class="pill-link pay ft-sup-btn" href="#/about/partnership">♥ ' + F.supBtn + '</a>' +
+    '</div>' +
+    '<div class="ft-grid">' +
+      '<div class="ft-brand"><a class="logo" href="#/">BEKNAZAURUS</a><div class="socials">' + socials + '</div>' +
+        (c.email ? '<a href="mailto:' + esc(c.email) + '">' + esc(c.email) + '</a>' : '') + '</div>' +
+      '<nav class="ft-col" aria-label="' + esc(F.nav) + '"><p class="ft-h">' + F.nav + '</p><a href="#/">BEKNAZAURUS</a><a href="#/stories">' + t('nav.stories') + '</a><a href="#/travel">' + t('nav.travel') + '</a></nav>' +
+      '<nav class="ft-col" aria-label="' + esc(F.about) + '"><p class="ft-h">' + F.about + '</p><a href="#/about/author">' + t('about.author') + '</a><a href="#/about/project">' + t('about.project') + '</a><a href="#/about/works">' + t('about.works') + '</a><a href="#/about/services">' + t('about.services') + '</a><a href="#/about/partnership">' + t('about.partner') + '</a></nav>' +
+      '<div class="ft-col"><p class="ft-h">' + F.contacts + '</p><a href="' + esc(c.instagram) + '" target="_blank" rel="noopener">Instagram</a>' +
+        (c.youtube ? '<a href="' + esc(c.youtube) + '" target="_blank" rel="noopener">YouTube</a>' : '') +
+        (c.telegram ? '<a href="' + esc(c.telegram) + '" target="_blank" rel="noopener">Telegram</a>' : '') +
+        '<a href="#/about/services">' + F.write + ' →</a></div>' +
+    '</div>' +
+    '<div class="ft-bottom"><span>© ' + SITE.year + ' BEKNAZAURUS · ' + F.rights + '</span>' +
+      '<span class="ft-langs">' + ['ru', 'en', 'ky'].map(l => '<button data-lang="' + l + '"' + (l === lang ? ' class="active"' : '') + '>' + ({ ru: 'RU', en: 'ENG', ky: 'KG' })[l] + '</button>').join('') + '</span></div>';
+  $$('#foot [data-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
 }
 
 /* ====================================================================
@@ -770,12 +790,13 @@ function route() {
   app.className = 'pg-' + cls;
   tone = pageTone;
   document.body.classList.toggle('home-light', cls === 'home');
+  document.body.classList.toggle('light-top', !!$('.hero-light'));
   document.body.classList.toggle('dark-page', cls === 'story-page' && /t-cinema/.test(html.slice(0, 40)));
   setMeta(title, desc);
   $$('#mainnav a').forEach(a => a.classList.toggle('active', a.dataset.nav === nav));
   window.scrollTo(0, 0);
   if ($('#grid')) renderGrid();
-  watchCards(); observeReveal(); checkBroken(); updateHeader();
+  watchCards(); prepVideos(); observeReveal(); checkBroken(); updateHeader();
   const sn = $('.subnav'), act = sn && $('a.active', sn);
   if (act) sn.scrollLeft = act.offsetLeft - (sn.clientWidth - act.offsetWidth) / 2;
   if (window.BKPages && BKPages.has(sec)) BKPages.mount(sec, sub, item);
@@ -821,6 +842,7 @@ function setLang(l) {
   qIn.placeholder = lang === 'en' ? 'Search stories, journeys and works' : lang === 'ky' ? 'Окуялар, саякаттар жана иштер боюнча издөө' : 'Поиск по историям, путешествиям и работам';
   try { localStorage.setItem('bekn_lang', lang); } catch (e) {}
   renderFooter();
+  if (window.BKacct) BKacct();
   if (app.innerHTML) { const y = scrollY; route(); window.scrollTo(0, y); }
 }
 $$('.langsw button').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));

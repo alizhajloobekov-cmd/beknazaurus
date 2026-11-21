@@ -374,7 +374,7 @@
     if (!BK.on) { a.hidden = true; return; }
     a.hidden = false;
     a.href = BK.user ? (BK.isAdmin ? '#/admin' : '#/account') : '#/login';
-    a.textContent = BK.user ? (BK.isAdmin ? 'Админ' : 'Кабинет') : 'Войти';
+    a.textContent = t(BK.user ? (BK.isAdmin ? 'acct.admin' : 'acct.account') : 'acct.login');
   }
   BK.onChange(acct);
   window.BKacct = acct;
