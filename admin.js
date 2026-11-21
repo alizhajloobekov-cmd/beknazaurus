@@ -138,7 +138,7 @@
   });
 
   /* ============ АДМИН-ПАНЕЛЬ ============ */
-  const TABS = [['stories', 'Статьи и истории'], ['travel', 'Путешествия'], ['works', 'Работы'], ['services', 'Услуги'], ['orders', 'Заказы'], ['messages', 'Сообщения'], ['users', 'Пользователи']];
+  const TABS = [['stories', 'Статьи и истории'], ['travel', 'Путешествия'], ['works', 'Работы'], ['services', 'Услуги'], ['orders', 'Заказы'], ['messages', 'Сообщения'], ['comments', 'Комментарии'], ['users', 'Пользователи']];
   const ST = { draft: 'Черновик', published: 'Опубликовано', soon: 'Скоро', hidden: 'Скрыто' };
 
   // описание полей для редакторов (type: text | area | lines | number | select | checks | image | images | rich)
@@ -335,6 +335,18 @@
           const r = e.target.closest('[data-read]'), d = e.target.closest('[data-delmsg]');
           if (r) { await BK.admin.readMessage(r.dataset.read); adminTab('messages'); }
           if (d && confirm('Удалить сообщение?')) { await BK.admin.deleteMessage(d.dataset.delmsg); adminTab('messages'); }
+        };
+        return;
+      }
+      if (tab === 'comments') {
+        const list = (await BK.db.from('comments').select('*').order('created_at', { ascending: false }).limit(300)).data || [];
+        main.innerHTML = '<div class="adm-head"><h1 class="display md">Комментарии</h1><p class="muted">' + list.length + '</p></div>' + (list.length ? list.map(c =>
+          '<div class="msg' + (c.hidden ? '' : ' unread') + '"><p class="muted small">' + date(c.created_at) + ' · ' + h(c.author_name || '—') + ' · <a href="#/' + h(c.target.replace('story:', 'stories/').replace('travel:', 'travel/').replace('work:', 'about/works/')) + '">' + h(c.target) + '</a>' + (c.hidden ? ' · скрыт' : '') + '</p>' +
+          '<p>' + h(c.body) + '</p><p><button class="mini" data-hide="' + c.id + '" data-v="' + (!c.hidden) + '">' + (c.hidden ? 'Показать' : 'Скрыть') + '</button> <button class="mini danger" data-delc="' + c.id + '">Удалить</button></p></div>').join('') : '<p class="muted">Комментариев пока нет.</p>');
+        main.onclick = async e => {
+          const hd = e.target.closest('[data-hide]'), d = e.target.closest('[data-delc]');
+          if (hd) { await BK.db.from('comments').update({ hidden: hd.dataset.v === 'true' }).eq('id', hd.dataset.hide); adminTab('comments'); }
+          if (d && confirm('Удалить комментарий?')) { await BK.db.from('comments').delete().eq('id', d.dataset.delc); adminTab('comments'); }
         };
         return;
       }

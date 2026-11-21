@@ -429,6 +429,10 @@ function pageStory(s) {
   let blocks = s.blocks.map(b => (BLOCKS[b.t] ? BLOCKS[b.t](b, s) : '')).join('');
   // связь «История → Путешествие», если у истории указан маршрут и блока ещё нет
   if (s.travel && !s.blocks.some(b => b.t === 'travel-link')) blocks += BLOCKS['travel-link']({}, s);
+  const soc = socialBlock('story:' + s.slug, s.title);
+  const ri = s.blocks.findIndex(b => b.t === 'related');
+  if (ri > -1) { const parts = s.blocks.map(b => (BLOCKS[b.t] ? BLOCKS[b.t](b, s) : '')); parts.splice(ri, 0, soc); blocks = parts.join(''); if (s.travel && !s.blocks.some(b => b.t === 'travel-link')) blocks += BLOCKS['travel-link']({}, s); }
+  else blocks += soc;
   if (!s.blocks.some(b => b.t === 'end')) blocks += BLOCKS.end({ title: s.title, lines: [s.type + (s.date ? ' · ' + s.date : '')] });
   return '<article class="story t-' + (s.theme || 'default') + '">' + blocks + '</article>';
 }
@@ -524,7 +528,7 @@ function pageTrip(x) {
   (x.priceKGS && x.status === 'open' ? '<section class="t-sec pay-sec"><div class="wrap"><h2 class="display md">Забронировать место</h2><p>Онлайн-оплата участия в путешествии «' + esc(x.title) + '»: ' + fmtKGS(x.priceKGS) + '.</p>' +
     payBtn({ kind: 'travel', slug: x.slug, title: 'Путешествие «' + x.title + '»', amount: x.priceKGS }, 'Забронировать — ' + fmtKGS(x.priceKGS)) + '</div></section>' : '') +
   '<section class="t-sec form-sec"><div class="wrap two"><div><h2 class="display md">Поехали?</h2><p>Оставьте контакт — напишу, когда откроется набор на «' + esc(x.title) + '».</p></div>' +
-    form('trip', [['Имя', 'name', 1], ['Email или WhatsApp', 'contact', 1], ['Сообщение', 'msg', 0, 1]], 'Поехали') + '</div></section>';
+    form('trip', [['Имя', 'name', 1], ['Email или WhatsApp', 'contact', 1], ['Сообщение', 'msg', 0, 1]], 'Поехали') + '</div></section>' + socialBlock('travel:' + x.slug, x.title);
 }
 
 /* ====================================================================
@@ -620,7 +624,7 @@ function pageWork(w) {
     (w.video ? '<div class="b-player"><video controls playsinline preload="metadata" poster="' + esc(w.cover) + '" src="' + esc(w.video) + '"' + (w.vertical ? ' class="vert"' : '') + '></video></div>' : '') +
     (st ? '<p style="margin-top:40px"><a class="pill-link" href="#/stories/' + st.slug + '">Открыть историю «' + esc(st.title) + '» →</a></p>' : '') +
     '<p style="margin-top:20px"><a class="pill-link ghost" href="#/about/works">← Все работы</a></p>' +
-  '</div></section>';
+  '</div></section>' + socialBlock('work:' + w.slug, w.title);
 }
 
 function aboutServices() {
@@ -797,6 +801,7 @@ function route() {
   window.scrollTo(0, 0);
   if ($('#grid')) renderGrid();
   watchCards(); prepVideos(); observeReveal(); checkBroken(); updateHeader();
+  if (window.mountSocial) mountSocial();
   const sn = $('.subnav'), act = sn && $('a.active', sn);
   if (act) sn.scrollLeft = act.offsetLeft - (sn.clientWidth - act.offsetWidth) / 2;
   if (window.BKPages && BKPages.has(sec)) BKPages.mount(sec, sub, item);
